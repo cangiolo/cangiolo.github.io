@@ -612,13 +612,13 @@ a:hover { color: var(--accent); text-decoration-color: var(--accent); }
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  margin: 0 0.7rem 0.7rem;
-  padding: 0.42rem 0.7rem;
+  margin: 0;
+  padding: 0.5rem 1.05rem;
   color: var(--mute);
   font-family: var(--ui);
   font-size: 0.7rem;
   letter-spacing: 0.04em;
-  border-radius: 999px;
+  border-radius: 0;
   background: color-mix(in srgb, var(--ink) 5%, var(--bg));
   transition: background 0.15s ease;
 }
