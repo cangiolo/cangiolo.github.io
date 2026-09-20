@@ -619,7 +619,7 @@ a:hover { color: var(--accent); text-decoration-color: var(--accent); }
   font-size: 0.7rem;
   letter-spacing: 0.04em;
   border-radius: 0;
-  background: color-mix(in srgb, var(--ink) 5%, var(--bg));
+  background: color-mix(in srgb, var(--ink) 2.5%, var(--bg));
   transition: background 0.15s ease;
 }
 .recon-card-foot:hover {
