@@ -30,7 +30,8 @@
 @media (pointer: coarse) { .citation-trigger { padding: 5px 8px; } }
 
 .gene-sequence.layout-article {
-  max-width: 1680px;
+  max-width: 1920px;
+  padding-left: 300px;
 }
 .gene-sequence .left-stack {
   width: 190px;
@@ -121,6 +122,7 @@
 .gene-sequence .ref-item { scroll-margin-top: 5rem; }
 .gene-sequence .left-stack { max-height: calc(100vh - 90px); overflow-y: auto; }
 @media (max-width: 900px) {
+  .gene-sequence.layout-article { padding-left: 22px; }
   .gene-sequence .left-stack { width: 100%; position: static; max-height: none; overflow: visible; }
   .gene-sequence .wrap { width: 100%; padding: 0; }
   .gene-sequence .refs-rail { width: 100%; max-height: none; overflow: visible; }
