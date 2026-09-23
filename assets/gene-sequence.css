@@ -29,6 +29,9 @@
 .citation-trigger:focus-visible, .citation-preview :focus-visible { outline: 2px solid var(--kicker); outline-offset: -2px; }
 @media (pointer: coarse) { .citation-trigger { padding: 5px 8px; } }
 
+.gene-sequence.layout-article {
+  max-width: 1680px;
+}
 .gene-sequence .left-stack {
   width: 190px;
   max-height: calc(100vh - 90px);
@@ -53,7 +56,7 @@
 }
 .gene-sequence .post > h1 { line-height: 1.25; }
 .gene-sequence .table-scroll { overflow-x: auto; margin-bottom: 1.2em; }
-.gene-sequence .table-scroll table { min-width: 960px; margin-bottom: 0; }
+.gene-sequence .table-scroll table { width: 100%; min-width: 0; margin-bottom: 0; }
 .gene-sequence .table-scroll th { font-weight: 600; }
 .gene-sequence .table-scroll td { vertical-align: top; }
 .gene-sequence .tag {
