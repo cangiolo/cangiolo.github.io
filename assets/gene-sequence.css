@@ -38,7 +38,10 @@
   align-items: stretch;
   text-align: left;
 }
-.gene-sequence .side-toc::before,
+.gene-sequence .side-toc::before {
+  align-self: stretch;
+  text-align: center;
+}
 .gene-sequence .side-toc a {
   align-self: stretch;
   text-align: left;
