@@ -29,6 +29,24 @@
 .citation-trigger:focus-visible, .citation-preview :focus-visible { outline: 2px solid var(--kicker); outline-offset: -2px; }
 @media (pointer: coarse) { .citation-trigger { padding: 5px 8px; } }
 
+.gene-sequence .left-stack {
+  width: 190px;
+  max-height: calc(100vh - 90px);
+  overflow-y: auto;
+}
+.gene-sequence .side-toc {
+  align-items: stretch;
+  text-align: left;
+}
+.gene-sequence .side-toc::before,
+.gene-sequence .side-toc a {
+  align-self: stretch;
+  text-align: left;
+}
+.gene-sequence .refs-rail {
+  max-height: calc(100vh - 90px);
+  overflow-y: auto;
+}
 .gene-sequence .post > h1 { line-height: 1.25; }
 .gene-sequence .table-scroll { overflow-x: auto; margin-bottom: 1.2em; }
 .gene-sequence .table-scroll table { min-width: 960px; margin-bottom: 0; }
