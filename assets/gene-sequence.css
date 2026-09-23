@@ -1,0 +1,13 @@
+.gene-sequence .post > h1 { line-height: 1.25; }
+.gene-sequence .table-scroll { overflow-x: auto; margin-bottom: 1.2em; }
+.gene-sequence .table-scroll table { min-width: 960px; margin-bottom: 0; }
+.gene-sequence .table-scroll th { font-weight: 600; }
+.gene-sequence .table-scroll td { vertical-align: top; }
+.gene-sequence .prose { overflow-wrap: anywhere; }
+.gene-sequence .prose figcaption em { font-style: italic; }
+.gene-sequence .ref-item { scroll-margin-top: 5rem; }
+.gene-sequence .left-stack { max-height: calc(100vh - 90px); overflow-y: auto; }
+@media (max-width: 900px) {
+  .gene-sequence .left-stack { width: 100%; position: static; max-height: none; overflow: visible; }
+  .gene-sequence .wrap { width: 100%; padding: 0; }
+}

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>单细胞大模型的基因序列处理方法 · zyzhou</title>
+  <meta name="description" content="dum spiro, spero. — zyzhou’s notes">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Fragment+Mono&family=Host+Grotesk:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Noto+Sans+SC:wght@400;500&family=Noto+Serif+SC:wght@400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css?v=30">
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="../assets/gene-sequence.css?v=1">
+</head>
+<body>
+  <nav class="topnav">
+    <a class="wordmark" href="../index.html">zyzhou</a>
+    <div class="nav-links">
+      <a href="../index.html">Notes</a>
+      <a href="../recons.html">Recons</a>
+    </div>
+  </nav>
+  <div class="layout layout-article gene-sequence">
+    <div class="left-stack">
+    <div class="author">
+        <div class="author-avatar"><img src="../assets/avatar.jpg" alt="zyzhou"></div>
+        <h1 class="author-name">zyzhou <span class="cn">dum spiro, spero.</span></h1>
+        <ul class="author-links">
+          <li><a href="mailto:zyzhou1102533372@gmail.com"><svg class="link-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>Email</a></li>
+          <li><a href="https://github.com/zyzhou-saffron" target="_blank" rel="noopener"><svg class="link-ico" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.24 2.87.12 3.17.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.82.58C20.56 22.29 24 17.79 24 12.5 24 5.87 18.63.5 12 .5z"/></svg>GitHub</a></li>
+        </ul>
+      </div>
+    <nav class="article-toc side-toc" aria-label="文章目录"><a href="#section-1">一、方法总览</a><a href="#section-2">二、Geneformer：以表达秩构造序列</a><a href="#section-3">三、scBERT：固定基因对齐，表达嵌入加 Gene2Vec</a><a href="#section-4">四、scGPT：基因身份与表达配对，不以序号定义基因关系</a><a href="#section-5">五、scFoundation：固定参考空间，编码时压紧非零条目</a><a href="#section-6">六、RegFormer：将先验调控层级转成序列顺序</a><a href="#section-7">七、补充对照：GRNFormer 使用图，但不依赖拓扑排序</a><a href="#section-8">八、怎样准确概括这些差别？</a><a href="#section-9">核验说明</a><a href="#references">参考资料</a></nav>
+    </div>
+    <div class="wrap">
+    <article class="post">
+<a class="article-back" href="../index.html">← Back</a>
+<p class="article-kicker">NOTES / SEPTEMBER 2026</p>
+<h1>单细胞大模型的基因序列处理方法</h1>
+<p class="article-dek">基因选择与身份表示、基因排列与位置机制，以及表达量编码。</p>
+<p class="article-meta"><span>zyzhou</span><span class="sep"></span><time datetime="2026-09-23">23 Sep 2026</time></p>
+<div class="prose"><p>单细胞表达谱本来是“基因—表达量”的矩阵，并不像一句话那样自带词序。对一个细胞而言，每个基因对应一个测得的表达值；把某个基因放在另一个基因前面，通常只是数据存储或预处理时的安排，并不天然表示它在生物学上更上游。因此，将表达谱组织为序列模型的输入时，需要分别明确：基因选择与身份表示、基因排列与位置机制、表达量编码；这些决定不能混为一谈。</p>
+<p>基因选择与身份表示决定了模型的视野。可以使用预先定义的基因集合，也可以只保留高变基因、特定通路中的基因，或者每个细胞中检测到表达的基因；选中的表达值还需要通过基因 ID 或固定位置对应的身份向量，让模型辨认所属基因。不同选择会改变输入长度，也会影响低表达基因和未检测到的基因是否被保留。例如，Geneformer 只对词表内的非零表达基因进行排序，并在超长时截断，因此一个基因未出现在序列中，并不必然意味着它在生物学上不表达。即使表达矩阵中的测量值为零，也可能与转录本捕获效率、测序深度等限制有关；而单次测量只是采样时刻的快照，不能代表该基因在其他时刻的表达状态。</p>
+<p>排列规则决定模型视野中基因的先后。可以按照固定的基因索引排列（如 scFoundation），也可以按照表达值的高低排列（如 Geneformer），或按先验调控图的拓扑序排列（如 RegFormer）。固定参考索引用于保持基因身份与表达值的对应，但筛选或压紧条目后，同一基因在实际输入序列中的位置仍可能变化；按表达值排序时，同一位置表示的是表达排名，对应的基因则可能随细胞而变化。<strong>表达排名不等于调控层级，“表达更高”并不意味着“调控更上游”。</strong> 此外，排出顺序并不意味着模型一定把先后关系作为额外信息：模型可以通过显式位置编码利用顺序，也可以像 Mamba 那样，通过沿序列递推的计算方式利用顺序。</p>
+<p>表达编码决定表达信息进入模型的形式。表达量可以经过归一化和对数变换后，以连续数值映射成向量；也可以被划分到若干区间，用离散的分箱编号表示。比如，把一组表达值映射为“低、中、高”或更细的等级，改变的是表达数值的表示粒度，并不自动改变基因的排列。一个序列完全可以按固定基因顺序组织，同时使用分箱后的表达值；也可以先按表达量排序，再为每个基因附加连续的表达量编码。此外，调控图也可以通过注意力或图表示提供关系信息，而不改变基因排列；使用图先验不等于按图排序。</p>
+<p>本文比较 Geneformer、scBERT、scGPT、scFoundation 和 RegFormer，并将 GRNFormer 作为图先验注入方式的补充对照。它们不一定采用相同规模或同类骨干网络；这里关注的是基因序列的构造，不是性能排名。</p>
+<h2 id="section-1">一、方法总览</h2>
+<div class="table-scroll" role="region" aria-label="方法总览对比表" tabindex="0"><table>
+<thead>
+<tr>
+<th>模型与核对范围</th>
+<th>输入基因的选择</th>
+<th>基因顺序的来源</th>
+<th>表达量怎样进入模型</th>
+<th>顺序的含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Geneformer，原始 V1，并注明 V2 差异</td>
+<td>词表中的非零表达基因；超长时保留排名靠前者</td>
+<td>按经细胞测序深度和基因语料库中位数校正后的表达值降序排列</td>
+<td>原始方案不另附连续表达向量，而以排名承载相对表达信息</td>
+<td>在该细胞中的相对表达排名，不是调控层级</td>
+</tr>
+<tr>
+<td>scBERT，官方公开实现</td>
+<td>对齐固定参考基因表；缺失项补零</td>
+<td>固定参考表顺序</td>
+<td>预处理后表达值截断并转为整数，查表达嵌入表；加 Gene2Vec 向量</td>
+<td>位置用于匹配基因身份及其 Gene2Vec，不表示上游—下游</td>
+</tr>
+<tr>
+<td>scGPT，官方默认 tokenizer 与模型实现</td>
+<td>默认排除零表达基因；可配置包含；超长时可随机抽样</td>
+<td>截断前沿输入列顺序；随机抽样后不保证原顺序</td>
+<td>支持连续值编码、类别编码或缩放；具体预处理可使用表达分箱</td>
+<td>默认编码路径不使用序号位置编码，基因身份由 gene token 表达</td>
+</tr>
+<tr>
+<td>scFoundation，论文所用 xTrimoGene 架构及官方模型</td>
+<td>固定 19,264 基因参考空间；编码器只读未掩码非零项，解码器恢复全参考空间</td>
+<td>按固定基因索引对齐，再压紧编码器实际读取的条目</td>
+<td>AutoDiscretization 将数值映成多个可学习 bin 向量的加权和，再结合基因身份嵌入</td>
+<td>索引用来辨认基因，不是表达排名或调控先后</td>
+</tr>
+<tr>
+<td>RegFormer，2025 年预印本 v1</td>
+<td>按细胞表达基因组织输入，结合先验调控图</td>
+<td>从先验图去环后取得拓扑序 π</td>
+<td>分别编码基因身份与表达，再交给 Mamba 骨干</td>
+<td>调控先后约束来自先验图；不是模型从表达中独立发现的因果顺序</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="section-2">二、Geneformer：以表达秩构造序列</h2>
+<figure><img src="../assets/img/gene-sequence/geneformer_fig1c.png" alt="Geneformer 原论文 Figure 1c：表达秩编码与 Transformer 架构" /><figcaption>图 1. <a href="https://www.nature.com/articles/s41586-023-06139-9/figures/1">Geneformer，<em>Nature</em>（2023），Figure 1c</a>。<a href="../assets/img/gene-sequence/geneformer_fig1.png">完整原图</a>。</figcaption></figure>
+<h3>基因选择与身份表示</h3>
+<p>Geneformer 的 <a href="https://huggingface.co/ctheodoris/Geneformer/blob/1f7fbae4e469a5f4f1af8c111a529cfe1b3829f5/geneformer/tokenizer.py#L65-L82"><code>tokenizer.py</code></a> 从词表内<a href="https://huggingface.co/ctheodoris/Geneformer/blob/1f7fbae4e469a5f4f1af8c111a529cfe1b3829f5/geneformer/tokenizer.py#L74-L82">选取每个细胞的非零表达基因</a>，按校正后的表达值<a href="https://huggingface.co/ctheodoris/Geneformer/blob/1f7fbae4e469a5f4f1af8c111a529cfe1b3829f5/geneformer/tokenizer.py#L65-L71">排序，输出基因 token ID</a>；模型端再通过可学习的嵌入表，将这些 ID 映射为向量。<sup class="ref"><a href="#ref-1">[1]</a><a href="#ref-2">[2]</a></sup></p>
+<p><a href="https://huggingface.co/ctheodoris/Geneformer/blob/1f7fbae4e469a5f4f1af8c111a529cfe1b3829f5/geneformer/tokenizer.py#L745-L772">超长时保留排名靠前的基因</a>：V1 最多保留 <a href="https://huggingface.co/ctheodoris/Geneformer/blob/1f7fbae4e469a5f4f1af8c111a529cfe1b3829f5/geneformer/tokenizer.py#L374-L376">2,048</a> 个基因 token；V2 的默认总长为 <a href="https://huggingface.co/ctheodoris/Geneformer/blob/1f7fbae4e469a5f4f1af8c111a529cfe1b3829f5/geneformer/tokenizer.py#L305-L310">4,096</a>，其中 <code>&lt;CLS&gt;</code> 和 <code>&lt;EOS&gt;</code> 特殊 token 各占一个位置，因此最多容纳 4,094 个基因 token。这里的长度设置分别对应不同模型版本。</p>
+<h3>基因排列与位置机制</h3>
+<p>官方 <a href="https://huggingface.co/ctheodoris/Geneformer/blob/1f7fbae4e469a5f4f1af8c111a529cfe1b3829f5/geneformer/tokenizer.py#L680-L692"><code>tokenizer.py</code></a> 先<a href="https://huggingface.co/ctheodoris/Geneformer/blob/1f7fbae4e469a5f4f1af8c111a529cfe1b3829f5/geneformer/tokenizer.py#L680-L687">按细胞总 counts 归一化</a>，再<a href="https://huggingface.co/ctheodoris/Geneformer/blob/1f7fbae4e469a5f4f1af8c111a529cfe1b3829f5/geneformer/tokenizer.py#L645-L687">除以各基因在预训练语料库中的非零表达中位数</a>，最后<a href="https://huggingface.co/ctheodoris/Geneformer/blob/1f7fbae4e469a5f4f1af8c111a529cfe1b3829f5/geneformer/tokenizer.py#L65-L71">按校正值降序排列</a>。这个顺序反映基因相对于其通常表达水平的排名，而不是原始 counts 的大小。同一基因在不同细胞中的位置可以变化，序列中的前后承载的是这种细胞内排名信息。<sup class="ref"><a href="#ref-1">[1]</a><a href="#ref-2">[2]</a></sup> 在模型端，官方 V1 配置明确采用<a href="https://huggingface.co/ctheodoris/Geneformer/blob/1f7fbae4e469a5f4f1af8c111a529cfe1b3829f5/Geneformer-V1-10M/config.json#L13-L19">绝对位置嵌入</a>；与该配置记录的 Transformers 4.6.0 对应的 BERT 实现会<a href="https://github.com/huggingface/transformers/blob/v4.6.0/src/transformers/models/bert/modeling_bert.py#L169-L195">按序号查询可学习的位置向量</a>，并<a href="https://github.com/huggingface/transformers/blob/v4.6.0/src/transformers/models/bert/modeling_bert.py#L200-L209">将其加到包含基因 token 嵌入的输入表示上</a>。因此，排名不仅决定基因的排列，也通过位置嵌入显式进入模型；这里的位置代表表达排名，而不是基因组坐标或调控层级。</p>
+<h3>表达量编码</h3>
+<p>rank-value encoding 将表达信息压缩进基因的排列，而不是为每个基因另附连续表达数值向量。因此，基因身份与表达排名共同构成输入，但两个校正值相差多少不能仅从序列恢复。对 Geneformer 而言，排列和表达编码是相互关联的：排序本身就是表达信息进入模型的方式之一。</p>
+<h2 id="section-3">三、scBERT：固定基因对齐，表达嵌入加 Gene2Vec</h2>
+<figure><img src="../assets/img/gene-sequence/scbert_fig1b.png" alt="scBERT 原论文 Figure 1b：基因与表达双嵌入及 Performer 架构" /><figcaption>图 2. <a href="https://www.nature.com/articles/s42256-022-00534-z/figures/1">scBERT，<em>Nature Machine Intelligence</em>（2022），Figure 1b</a>。<a href="../assets/img/gene-sequence/scbert_fig1.png">完整原图</a>。</figcaption></figure>
+<h3>基因选择与身份表示</h3>
+<p>scBERT 官方 <a href="https://github.com/TencentAILabHealthcare/scBERT/blob/262fd4b91f3f1c21a6e595d03d4ef423e16ffc99/preprocess.py"><code>preprocess.py</code></a> 读取 Panglao 参考数据的基因列表，<a href="https://github.com/TencentAILabHealthcare/scBERT/blob/262fd4b91f3f1c21a6e595d03d4ef423e16ffc99/preprocess.py#L4-L17">按参考表逐列复制匹配基因的表达，缺失基因保留为零</a>，而不是为每个细胞单独筛选非零基因。官方 <a href="https://github.com/TencentAILabHealthcare/scBERT/blob/262fd4b91f3f1c21a6e595d03d4ef423e16ffc99/finetune.py"><code>finetune.py</code></a> 的默认基因数为 <a href="https://github.com/TencentAILabHealthcare/scBERT/blob/262fd4b91f3f1c21a6e595d03d4ef423e16ffc99/finetune.py#L31-L41">16,906</a>，读取完整表达行后<a href="https://github.com/TencentAILabHealthcare/scBERT/blob/262fd4b91f3f1c21a6e595d03d4ef423e16ffc99/finetune.py#L83-L90">在末尾追加一个零值</a>，形成 16,907 个位置；这不是 Geneformer 式的表达排名截断。<sup class="ref"><a href="#ref-3">[3]</a><a href="#ref-4">[4]</a></sup></p>
+<p>基因身份由预先计算的 Gene2Vec 向量提供，其中包含共表达信息。模型文件 <a href="https://github.com/TencentAILabHealthcare/scBERT/blob/262fd4b91f3f1c21a6e595d03d4ef423e16ffc99/performer_pytorch/performer_pytorch.py"><code>performer_pytorch.py</code></a> 中的 <code>Gene2VecPositionalEmbedding</code> <a href="https://github.com/TencentAILabHealthcare/scBERT/blob/262fd4b91f3f1c21a6e595d03d4ef423e16ffc99/performer_pytorch/performer_pytorch.py#L439-L445">加载 16,906 行的 Gene2Vec 文件，并追加一行零向量</a>，与输入末尾的附加位置对应。这里不是把表达值当作基因 ID，而是将表达输入与另一条身份表示分支配对。<sup class="ref"><a href="#ref-5">[5]</a></sup></p>
+<h3>基因排列与位置机制</h3>
+<p>表达列沿固定参考表组织，不按每个细胞的表达量重新排序。模型<a href="https://github.com/TencentAILabHealthcare/scBERT/blob/262fd4b91f3f1c21a6e595d03d4ef423e16ffc99/performer_pytorch/performer_pytorch.py#L447-L449">用序列位置生成索引并查询 Gene2Vec 对应行</a>，因此第 𝑖 个表达值必须属于 Gene2Vec 第 𝑖 行所代表的基因。只打乱表达列而不同时调整身份向量，会造成基因与表达错配。</p>
+<p>虽然类名中有“PositionalEmbedding”，这里的位置主要用于检索基因身份，并不是表达排名。在所核对的默认输入路径中，<a href="https://github.com/TencentAILabHealthcare/scBERT/blob/262fd4b91f3f1c21a6e595d03d4ef423e16ffc99/performer_pytorch/performer_pytorch.py#L580-L588"><code>pos_emb</code> 使用 Gene2Vec，<code>layer_pos_emb</code> 返回空值</a>，没有另外加入 Geneformer 那样的可学习序号位置向量。因而不能仅凭类名，就把它理解为给“第几位”赋予独立于基因身份的位置含义。<sup class="ref"><a href="#ref-5">[5]</a></sup></p>
+<h3>表达量编码</h3>
+<p>官方预处理先<a href="https://github.com/TencentAILabHealthcare/scBERT/blob/262fd4b91f3f1c21a6e595d03d4ef423e16ffc99/preprocess.py#L23">将每个细胞的总表达量归一化至 10,000</a>，再<a href="https://github.com/TencentAILabHealthcare/scBERT/blob/262fd4b91f3f1c21a6e595d03d4ef423e16ffc99/preprocess.py#L24">做以 2 为底的 log(1 + 𝑥) 变换</a>。微调脚本的 <a href="https://github.com/TencentAILabHealthcare/scBERT/blob/262fd4b91f3f1c21a6e595d03d4ef423e16ffc99/finetune.py#L33"><code>bin_num</code> 默认值为 5</a>，结合 <a href="https://github.com/TencentAILabHealthcare/scBERT/blob/262fd4b91f3f1c21a6e595d03d4ef423e16ffc99/finetune.py#L63"><code>CLASS = args.bin_num + 2</code></a>，将表达值<a href="https://github.com/TencentAILabHealthcare/scBERT/blob/262fd4b91f3f1c21a6e595d03d4ef423e16ffc99/finetune.py#L85-L88">截断到上限 5 后转为整数</a>。对非负表达值而言，这会得到 0–5 的离散编号，整数化会舍去小数部分，而不是四舍五入。<sup class="ref"><a href="#ref-4">[4]</a></sup></p>
+<p>模型通过<a href="https://github.com/TencentAILabHealthcare/scBERT/blob/262fd4b91f3f1c21a6e595d03d4ef423e16ffc99/performer_pytorch/performer_pytorch.py#L580-L581">可学习的表达嵌入表</a> 将这些编号映射为向量，再<a href="https://github.com/TencentAILabHealthcare/scBERT/blob/262fd4b91f3f1c21a6e595d03d4ef423e16ffc99/performer_pytorch/performer_pytorch.py#L606-L615">与对应位置的 Gene2Vec 向量相加</a>，送入 Performer。因此，代码中的 <code>token_emb</code> 在这条路径编码的是表达等级，而不是基因身份；不同细胞中同一基因的 Gene2Vec 表示相同，表达嵌入则可以不同。上述截断与整数化描述限定于这里引用的公开微调实现，不能直接等同于分位数分箱，也不能据此断言论文所有实验都使用相同的分箱设置。<sup class="ref"><a href="#ref-5">[5]</a></sup></p>
+<h2 id="section-4">四、scGPT：基因身份与表达配对，不以序号定义基因关系</h2>
+<figure><img src="../assets/img/gene-sequence/scgpt_fig1bc_horizontal.png" alt="scGPT 原论文 Figure 1b–c：输入嵌入与 Transformer 架构，横向排列" /><figcaption>图 3. <a href="https://www.nature.com/articles/s41592-024-02201-0/figures/1">scGPT，<em>Nature Methods</em>（2024），Figure 1b–c</a>。<a href="../assets/img/gene-sequence/scgpt_fig1.png">完整原图</a>。</figcaption></figure>
+<h3>基因选择与身份表示</h3>
+<p>scGPT 官方 <a href="https://github.com/bowang-lab/scGPT/blob/cebd6fae655b9c585a4807daa3ac31bb764f06b4/scgpt/tokenizer/gene_tokenizer.py"><code>gene_tokenizer.py</code></a> 接收表达矩阵以及与其列对应的基因 ID。<a href="https://github.com/bowang-lab/scGPT/blob/cebd6fae655b9c585a4807daa3ac31bb764f06b4/scgpt/tokenizer/gene_tokenizer.py#L292-L300"><code>include_zero_gene</code> 默认设为 <code>False</code></a>，因此默认<a href="https://github.com/bowang-lab/scGPT/blob/cebd6fae655b9c585a4807daa3ac31bb764f06b4/scgpt/tokenizer/gene_tokenizer.py#L326-L340">筛出非零表达项，并用相同索引取出基因 ID 与表达值</a>；启用该选项则保留输入中的零表达条目。这一步处理的是上游已经选定的基因列，不意味着所有任务都采用同一基因集合。<sup class="ref"><a href="#ref-6">[6]</a></sup></p>
+<p>模型端 <a href="https://github.com/bowang-lab/scGPT/blob/cebd6fae655b9c585a4807daa3ac31bb764f06b4/scgpt/model/model.py"><code>model.py</code></a> 的 <code>GeneEncoder</code> 将<a href="https://github.com/bowang-lab/scGPT/blob/cebd6fae655b9c585a4807daa3ac31bb764f06b4/scgpt/model/model.py#L717-L733">基因 ID 映射为可学习的嵌入，并做层归一化</a>。基因身份由显式 ID 决定，而不是像 scBERT 那样通过固定序列位置查询 Gene2Vec。<sup class="ref"><a href="#ref-7">[7]</a></sup></p>
+<p><a href="https://github.com/bowang-lab/scGPT/blob/cebd6fae655b9c585a4807daa3ac31bb764f06b4/scgpt/tokenizer/gene_tokenizer.py#L341-L345">启用 CLS 时，tokenizer 在开头插入 <code>&lt;cls&gt;</code> 并为其附上零值</a>。序列超过调用方设置的长度上限时，<code>pad_batch</code> <a href="https://github.com/bowang-lab/scGPT/blob/cebd6fae655b9c585a4807daa3ac31bb764f06b4/scgpt/tokenizer/gene_tokenizer.py#L389-L400">随机无放回抽取条目，并在启用 CLS 的分支保留首位 CLS</a>；较短序列则<a href="https://github.com/bowang-lab/scGPT/blob/cebd6fae655b9c585a4807daa3ac31bb764f06b4/scgpt/tokenizer/gene_tokenizer.py#L401-L415">补齐基因与表达值的 padding</a>。这里不是 Geneformer 式的“保留表达排名靠前者”，也没有一个由该函数统一规定、适用于所有任务的固定长度。<sup class="ref"><a href="#ref-6">[6]</a></sup></p>
+<h3>基因排列与位置机制</h3>
+<p>非零筛选沿输入矩阵的列位置取值，不按表达量排序；超长抽样得到的索引也<a href="https://github.com/bowang-lab/scGPT/blob/cebd6fae655b9c585a4807daa3ac31bb764f06b4/scgpt/tokenizer/gene_tokenizer.py#L389-L400">没有重新排序，而是直接用于同时索引基因 ID 和表达值</a>。因此，未触发抽样时保留输入列的相对顺序，抽样后则不保证维持原顺序，但基因与表达始终成对移动。</p>
+<p>在所核对的 <code>TransformerModel</code> 中，<a href="https://github.com/bowang-lab/scGPT/blob/cebd6fae655b9c585a4807daa3ac31bb764f06b4/scgpt/model/model.py#L160-L190"><code>_encode</code> 合并基因与表达表示后直接送入 Transformer，没有加入序号位置向量</a>。文件虽然定义了 <a href="https://github.com/bowang-lab/scGPT/blob/cebd6fae655b9c585a4807daa3ac31bb764f06b4/scgpt/model/model.py#L736-L756"><code>PositionalEncoding</code> 类</a>，该输入路径并未调用它。与 Geneformer 用绝对位置嵌入表示排名不同，这条路径不把任意列序号作为额外的先后信息。讨论条目置换时仍需保持基因 ID、表达值及相关掩码对应，并保留 CLS 等特殊位置的用途；此结论不自动覆盖所有生成式注意力掩码或扩展模型。<sup class="ref"><a href="#ref-7">[7]</a></sup></p>
+<h3>表达量编码</h3>
+<p>表达分箱与模型端编码分属两个步骤。官方 <a href="https://github.com/bowang-lab/scGPT/blob/cebd6fae655b9c585a4807daa3ac31bb764f06b4/scgpt/preprocess.py"><code>preprocess.py</code></a> 在启用分箱时，<a href="https://github.com/bowang-lab/scGPT/blob/cebd6fae655b9c585a4807daa3ac31bb764f06b4/scgpt/preprocess.py#L187-L203">逐细胞按非零表达值的分位数计算分箱边界</a>，再<a href="https://github.com/bowang-lab/scGPT/blob/cebd6fae655b9c585a4807daa3ac31bb764f06b4/scgpt/preprocess.py#L203-L211">把非零项写成 1 至 <code>n_bins - 1</code> 的编号，零表达项保留为 0</a>。它不像 scBERT 所核对的微调脚本那样按统一上限截断后整数化；不同细胞的同一分箱编号也不意味着相同的绝对表达量。</p>
+<p>模型的 <a href="https://github.com/bowang-lab/scGPT/blob/cebd6fae655b9c585a4807daa3ac31bb764f06b4/scgpt/model/model.py#L33-L42"><code>input_emb_style</code> 默认采用 <code>continuous</code></a>，并<a href="https://github.com/bowang-lab/scGPT/blob/cebd6fae655b9c585a4807daa3ac31bb764f06b4/scgpt/model/model.py#L78-L92">支持连续值、类别与缩放三种方式</a>：连续值编码器通过<a href="https://github.com/bowang-lab/scGPT/blob/cebd6fae655b9c585a4807daa3ac31bb764f06b4/scgpt/model/model.py#L759-L786">两层线性变换、ReLU 和层归一化将标量转为向量</a>；类别编码器<a href="https://github.com/bowang-lab/scGPT/blob/cebd6fae655b9c585a4807daa3ac31bb764f06b4/scgpt/model/model.py#L789-L806">将离散编号转为整数并查询嵌入表</a>。这两种表示<a href="https://github.com/bowang-lab/scGPT/blob/cebd6fae655b9c585a4807daa3ac31bb764f06b4/scgpt/model/model.py#L169-L177">与基因嵌入相加，而缩放方式用表达标量乘以基因嵌入</a>。分箱后的编号同样可以作为连续值编码器的标量输入，因此“使用分箱”不能直接推断为“使用类别嵌入”；具体设置需同时检查数据预处理和模型配置。<sup class="ref"><a href="#ref-7">[7]</a></sup></p>
+<h2 id="section-5">五、scFoundation：固定参考空间，编码时压紧非零条目</h2>
+<figure><img src="../assets/img/gene-sequence/scfoundation_fig1.png" alt="scFoundation 原论文 Figure 1：预训练框架总览" /><figcaption>图 4. <a href="https://www.nature.com/articles/s41592-024-02305-7/figures/1">scFoundation，<em>Nature Methods</em>（2024），Figure 1</a>。<a href="../assets/img/gene-sequence/scfoundation_fig1.png">完整原图</a>。</figcaption></figure>
+<h3>基因选择与身份表示</h3>
+<p>scFoundation 使用固定的 19,264 基因参考空间，将输入对齐到参考表，缺失项补零。其 xTrimoGene 架构在训练时仅将未掩码的非零条目送入编码器，解码器再恢复全参考空间以预测表达。每个条目通过参考基因索引查询可学习的身份向量，因此编码器读到的条目虽然减少，基因身份仍被保留。<sup class="ref"><a href="#ref-8">[8]</a><a href="#ref-9">[9]</a><a href="#ref-10">[10]</a></sup></p>
+<h3>基因排列与位置机制</h3>
+<p>固定参考表规定完整表达向量的对齐方式，编码器实际读取的则是筛选、压紧后的短序列。同一基因的参考索引保持不变，但它在短序列中的位置可能随其他基因是否被保留而变化。基因身份嵌入跟随原始基因索引，而不是把压紧后“第几个条目”当作基因身份。解码端重新按参考空间组织条目，使预测结果可以对应回各基因；这种组织主要解决身份对齐与计算效率问题。<sup class="ref"><a href="#ref-9">[9]</a></sup></p>
+<h3>表达量编码</h3>
+<p>AutoDiscretization 根据输入数值计算一组权重，再用这些权重组合多个可学习的 bin 向量，得到表达嵌入，并与基因身份向量相加。它不是先将数值硬分配给唯一一个 bin，而是一种可学习的软组合；因此不能把它与 scBERT 的整数化查表或固定边界分箱视为同一处理。<sup class="ref"><a href="#ref-9">[9]</a></sup></p>
+<h2 id="section-6">六、RegFormer：将先验调控层级转成序列顺序</h2>
+<figure><img src="../assets/img/gene-sequence/regformer_published_fig1.png" alt="RegFormer 正式发表版 Figure 1：框架总览" /><figcaption>图 5. <a href="https://www.nature.com/articles/s41467-026-72198-x/figures/1">RegFormer，<em>Nature Communications</em>（2026），Figure 1</a>。<a href="../assets/img/gene-sequence/regformer_published_fig1.png">完整原图</a>。</figcaption></figure>
+<p>版本说明：图 5 来自正式发表版，下文方法描述沿用此前核对的 2025 年预印本 v1，不默认两个版本的全部细节相同。</p>
+<h3>基因选择与身份表示</h3>
+<p>此处沿用预印本 v1 的方法描述：RegFormer 按细胞中表达的基因组织输入，将基因身份与对应的表达值作为成对信息。身份分支用可学习的 token 嵌入表示基因，调控先验则用于决定这些条目的排列，而不是取代基因身份。<sup class="ref"><a href="#ref-11">[11]</a></sup></p>
+<h3>基因排列与位置机制</h3>
+<p>模型从知识库取得调控边集 𝐸，去除环后得到拓扑序 π，再据此排列输入。预印本 v1 提到去环涉及约 2% 的边，这一比例仅属于该文的数据与流程。Mamba 骨干沿序列进行状态更新，使前面的条目能够影响后续表示；因此这里的排序直接参与计算，不只是数据存储顺序。训练目标还包含沿该顺序的 next-token prediction。<sup class="ref"><a href="#ref-11">[11]</a></sup></p>
+<h3>表达量编码</h3>
+<p>预印本采用基因身份与表达值的双嵌入方案，将归一化表达值通过线性映射转为向量，再与基因身份嵌入相加。与 Geneformer 主要借排名承载表达信息不同，这里用拓扑顺序承载先验的先后约束，表达数值则另行编码。排序与表达编码分别提供不同来源的信息。<sup class="ref"><a href="#ref-11">[11]</a></sup></p>
+<h3>拓扑序的边界</h3>
+<p>若先验图有 𝐴 → 𝐶 与 𝐵 → 𝐶，那么 [𝐴, 𝐵, 𝐶] 和 [𝐵, 𝐴, 𝐶] 都可能是合法拓扑序。π 要求父节点在子节点之前，但不能完整保留原图的边、激活或抑制符号以及去环时丢掉的反馈。它提供的是来自既有知识的顺序约束，不是模型仅凭表达数据独立发现调控方向的证据。</p>
+<p>拓扑排序本身是已有算法。RegFormer 的方法特色是将先验调控层级用于单细胞模型的基因 token 组织；此前检索未找到更早的完全同配方模型，但不足以据此作出“全球首创”的判断。</p>
+<h2 id="section-7">七、补充对照：GRNFormer 使用图，但不依赖拓扑排序</h2>
+<figure><img src="../assets/img/gene-sequence/grnformer_fig2.png" alt="GRNFormer 原论文 Figure 2：框架总览" /><figcaption>图 6. <a href="https://arxiv.org/html/2503.01682v1#S1.F2">GRNFormer，<em>arXiv</em>（2025），Figure 2</a>。<a href="../assets/img/gene-sequence/grnformer_fig2.png">完整原图</a>。</figcaption></figure>
+<h3>输入组织沿用所连接的基础模型</h3>
+<p>GRNFormer 不是与上述模型并列的独立 tokenizer 方案，而是将调控图信息融合进 RNA 基础模型的框架。其表达分支可连接 scGPT、scFoundation 等骨干，因此基因选择、身份表示、序列组织与表达编码需要随具体骨干及配置分别说明，不能为 GRNFormer 概括出唯一的一套基因排序规则。<sup class="ref"><a href="#ref-12">[12]</a></sup></p>
+<h3>图结构通过独立分支进入模型</h3>
+<p>2025 年 3 月的预印本使用 GraphSAGE 编码细胞级和细胞类型级调控图，将结构表示与表达分支的表示通过交叉注意力融合。这里的关键是让表达条目与图节点在基因身份上对应，使结构信息能够补充相应基因的表示，而不是先把图压缩成一条拓扑序。它与 RegFormer 的区别由此落在先验的注入位置：一个通过图表示与融合模块注入关系，一个通过输入排列注入先后约束。<sup class="ref"><a href="#ref-12">[12]</a></sup></p>
+<h2 id="section-8">八、怎样准确概括这些差别？</h2>
+<p>可将以上方法分成三类，但需要保留各自实现差异：</p>
+<ol>
+<li><strong>表达排名组织序列：Geneformer。</strong> 位置表达的是细胞内经校正后的表达排名，不是调控方向。</li>
+<li><strong>保持基因身份与表达对应，但不以调控层级定义顺序：scBERT、scGPT、scFoundation。</strong> scBERT 依赖固定位置对齐 Gene2Vec；scGPT 显式携带基因 ID，默认不使用序号位置编码；scFoundation 则在固定参考空间中进行稀疏编码与全空间解码。</li>
+<li><strong>用先验调控层级组织序列：RegFormer。</strong> 拓扑先后约束来源于外部图，序列只是结构先验的一种压缩表达。</li>
+</ol>
+<p>GRNFormer 展示的是另一条路线：保留图的表示通道，再与表达模型融合，而不把图主要压缩为一列基因顺序。</p>
+<p><strong>选择方法前应先说明希望保留什么：表达排名、数值大小、基因身份，还是调控结构。</strong> 这些信息不是互相替代的。任何一种排序本身，都不能证明模型学到了真实、情境特异且可用于干预预测的因果调控网络。</p>
+<h2 id="section-9">核验说明</h2>
+<p>本文以原论文、架构论文及官方公开实现为依据；正文中的代码行链接固定到所核对的提交版本；文末部分仓库与文件链接指向当前分支，内容可能随时间变化。本文不是完整的代码审计。RegFormer 部分沿用此前对预印本 v1 的核对；本次再次访问全文遇到 HTTP 429，未据此扩充其细节。scMamba 本次未取得可核实的具体输入方法来源，因此不纳入确定性比较。本说明不是穷尽的模型清单，也不作首创性或性能排名判断。</p>
+<h2 id="references" class="refs-title">参考资料</h2>
+
+<p class="ref-item" id="ref-1">[1]. <a href="https://www.nature.com/articles/s41586-023-06139-9">Geneformer 原始论文：Transfer learning enables predictions in network biology（Nature, 2023）</a></p>
+<p class="ref-item" id="ref-2">[2]. <a href="https://huggingface.co/ctheodoris/Geneformer/blob/main/geneformer/tokenizer.py">Geneformer 官方 tokenizer：归一化、排序及 V1/V2 长度设置</a></p>
+<p class="ref-item" id="ref-3">[3]. <a href="https://github.com/TencentAILabHealthcare/scBERT">scBERT 官方仓库</a></p>
+<p class="ref-item" id="ref-4">[4]. <a href="https://github.com/TencentAILabHealthcare/scBERT/blob/master/preprocess.py">scBERT 预处理：固定参考基因对齐</a>；<a href="https://github.com/TencentAILabHealthcare/scBERT/blob/master/finetune.py">微调脚本：表达截断、整数化及默认长度</a></p>
+<p class="ref-item" id="ref-5">[5]. <a href="https://github.com/TencentAILabHealthcare/scBERT/blob/master/performer_pytorch/performer_pytorch.py">scBERT 模型实现：Gene2Vec 按序列位置索引</a></p>
+<p class="ref-item" id="ref-6">[6]. <a href="https://github.com/bowang-lab/scGPT/blob/main/scgpt/tokenizer/gene_tokenizer.py">scGPT 官方 tokenizer：零值选择、随机截断、CLS 与 padding</a></p>
+<p class="ref-item" id="ref-7">[7]. <a href="https://github.com/bowang-lab/scGPT/blob/main/scgpt/model/model.py">scGPT 模型实现：基因编码、表达编码及默认输入路径</a>；<a href="https://www.nature.com/articles/s41592-024-02201-0">原始论文</a></p>
+<p class="ref-item" id="ref-8">[8]. <a href="https://github.com/biomap-research/scFoundation">scFoundation 官方仓库与 19,264 基因参考文件</a></p>
+<p class="ref-item" id="ref-9">[9]. <a href="https://arxiv.org/html/2311.15156v2">xTrimoGene 架构论文：稀疏编码器、全空间解码器与 AutoDiscretization</a></p>
+<p class="ref-item" id="ref-10">[10]. <a href="https://www.nature.com/articles/s41592-024-02305-7">scFoundation 论文（Nature Methods, 2024）</a></p>
+<p class="ref-item" id="ref-11">[11]. <a href="https://www.biorxiv.org/content/10.1101/2025.01.24.634217v1.full">RegFormer 预印本 v1</a></p>
+<p class="ref-item" id="ref-12">[12]. <a href="https://arxiv.org/html/2503.01682">GRNFormer 预印本：图拓扑适配器</a></p>
+
+</div>
+</article></div></div>
+<footer class="foot"><span>© 2021–2026 zyzhou</span><span>dum spiro, spero.</span></footer>
+</body></html>
