@@ -52,6 +52,20 @@
 .gene-sequence .table-scroll table { min-width: 960px; margin-bottom: 0; }
 .gene-sequence .table-scroll th { font-weight: 600; }
 .gene-sequence .table-scroll td { vertical-align: top; }
+.gene-sequence .tag {
+  display: inline-block;
+  margin: 0.12em 0.28em 0.12em 0;
+  padding: 0.14em 0.52em;
+  font-family: var(--ui);
+  font-size: 0.76rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 5%, var(--bg));
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  white-space: nowrap;
+}
 .gene-sequence .prose { overflow-wrap: anywhere; }
 .gene-sequence .prose figcaption em { font-style: italic; }
 .gene-sequence .ref-item { scroll-margin-top: 5rem; }
