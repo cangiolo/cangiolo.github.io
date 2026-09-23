@@ -63,51 +63,43 @@
   font-size: 0.76rem;
   font-weight: 600;
   line-height: 1.45;
+  color: var(--ink);
   border-radius: 2px;
   white-space: nowrap;
 }
 .gene-sequence .tag-nonzero {
-  color: color-mix(in srgb, #2f6fb5 70%, var(--ink));
   background: color-mix(in srgb, #2f6fb5 16%, var(--bg));
   border: 1px solid color-mix(in srgb, #2f6fb5 34%, var(--line));
 }
 .gene-sequence .tag-fixed {
-  color: color-mix(in srgb, #2a7a6d 70%, var(--ink));
   background: color-mix(in srgb, #2a7a6d 16%, var(--bg));
   border: 1px solid color-mix(in srgb, #2a7a6d 34%, var(--line));
 }
 .gene-sequence .tag-rank-order {
-  color: color-mix(in srgb, #c48a1a 72%, var(--ink));
   background: color-mix(in srgb, #e0a12b 18%, var(--bg));
   border: 1px solid color-mix(in srgb, #e0a12b 36%, var(--line));
 }
 .gene-sequence .tag-fixed-order {
-  color: color-mix(in srgb, #5a7a32 72%, var(--ink));
   background: color-mix(in srgb, #5a7a32 16%, var(--bg));
   border: 1px solid color-mix(in srgb, #5a7a32 34%, var(--line));
 }
 .gene-sequence .tag-no-order {
-  color: color-mix(in srgb, #6b5b95 72%, var(--ink));
   background: color-mix(in srgb, #6b5b95 16%, var(--bg));
   border: 1px solid color-mix(in srgb, #6b5b95 34%, var(--line));
 }
 .gene-sequence .tag-topo {
-  color: color-mix(in srgb, var(--accent) 72%, var(--ink));
   background: color-mix(in srgb, var(--accent) 16%, var(--bg));
   border: 1px solid color-mix(in srgb, var(--accent) 34%, var(--line));
 }
 .gene-sequence .tag-rank {
-  color: color-mix(in srgb, #a65c2a 72%, var(--ink));
   background: color-mix(in srgb, #a65c2a 16%, var(--bg));
   border: 1px solid color-mix(in srgb, #a65c2a 34%, var(--line));
 }
 .gene-sequence .tag-discrete {
-  color: color-mix(in srgb, #b54a6a 72%, var(--ink));
   background: color-mix(in srgb, #b54a6a 16%, var(--bg));
   border: 1px solid color-mix(in srgb, #b54a6a 34%, var(--line));
 }
 .gene-sequence .tag-numeric {
-  color: color-mix(in srgb, #3d6a88 72%, var(--ink));
   background: color-mix(in srgb, #3d6a88 16%, var(--bg));
   border: 1px solid color-mix(in srgb, #3d6a88 34%, var(--line));
 }
