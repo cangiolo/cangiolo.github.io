@@ -61,51 +61,60 @@
 .gene-sequence .table-scroll td { vertical-align: top; }
 .gene-sequence .tag {
   display: inline-block;
-  margin: 0.12em 0.28em 0.12em 0;
-  padding: 0.14em 0.52em;
+  margin: 0.18em 0.35em 0.18em 0;
+  padding: 0.28em 0.78em;
   font-family: var(--ui);
-  font-size: 0.76rem;
-  font-weight: 600;
-  line-height: 1.45;
-  color: var(--ink);
-  border-radius: 2px;
+  font-size: 0.78rem;
+  font-weight: 650;
+  line-height: 1.35;
+  border-radius: 8px;
   white-space: nowrap;
+  border: 1px solid transparent;
 }
 .gene-sequence .tag-nonzero {
-  background: color-mix(in srgb, #2f6fb5 16%, var(--bg));
-  border: 1px solid color-mix(in srgb, #2f6fb5 34%, var(--line));
+  color: #3b6ea8;
+  background: color-mix(in srgb, #5b8fc9 22%, var(--bg));
+  border-color: color-mix(in srgb, #5b8fc9 28%, var(--bg));
 }
 .gene-sequence .tag-fixed {
-  background: color-mix(in srgb, #2a7a6d 16%, var(--bg));
-  border: 1px solid color-mix(in srgb, #2a7a6d 34%, var(--line));
+  color: #3d6b4f;
+  background: color-mix(in srgb, #7aa37a 24%, var(--bg));
+  border-color: color-mix(in srgb, #7aa37a 30%, var(--bg));
 }
 .gene-sequence .tag-rank-order {
-  background: color-mix(in srgb, #e0a12b 18%, var(--bg));
-  border: 1px solid color-mix(in srgb, #e0a12b 36%, var(--line));
+  color: #9a6b18;
+  background: color-mix(in srgb, #e0b15a 26%, var(--bg));
+  border-color: color-mix(in srgb, #e0b15a 32%, var(--bg));
 }
 .gene-sequence .tag-fixed-order {
-  background: color-mix(in srgb, #5a7a32 16%, var(--bg));
-  border: 1px solid color-mix(in srgb, #5a7a32 34%, var(--line));
+  color: #4a6b38;
+  background: color-mix(in srgb, #8aaa6a 24%, var(--bg));
+  border-color: color-mix(in srgb, #8aaa6a 30%, var(--bg));
 }
 .gene-sequence .tag-no-order {
-  background: color-mix(in srgb, #6b5b95 16%, var(--bg));
-  border: 1px solid color-mix(in srgb, #6b5b95 34%, var(--line));
+  color: #5e5878;
+  background: color-mix(in srgb, #9a94b0 22%, var(--bg));
+  border-color: color-mix(in srgb, #9a94b0 30%, var(--bg));
 }
 .gene-sequence .tag-topo {
-  background: color-mix(in srgb, var(--accent) 16%, var(--bg));
-  border: 1px solid color-mix(in srgb, var(--accent) 34%, var(--line));
+  color: #c45c2a;
+  background: color-mix(in srgb, #ed682b 18%, var(--bg));
+  border-color: color-mix(in srgb, #ed682b 32%, var(--bg));
 }
 .gene-sequence .tag-rank {
-  background: color-mix(in srgb, #a65c2a 16%, var(--bg));
-  border: 1px solid color-mix(in srgb, #a65c2a 34%, var(--line));
+  color: #8a5a32;
+  background: color-mix(in srgb, #d4a07a 24%, var(--bg));
+  border-color: color-mix(in srgb, #d4a07a 32%, var(--bg));
 }
 .gene-sequence .tag-discrete {
-  background: color-mix(in srgb, #b54a6a 16%, var(--bg));
-  border: 1px solid color-mix(in srgb, #b54a6a 34%, var(--line));
+  color: #a14b5c;
+  background: color-mix(in srgb, #d48a96 22%, var(--bg));
+  border-color: color-mix(in srgb, #d48a96 30%, var(--bg));
 }
 .gene-sequence .tag-numeric {
-  background: color-mix(in srgb, #3d6a88 16%, var(--bg));
-  border: 1px solid color-mix(in srgb, #3d6a88 34%, var(--line));
+  color: #3a6a88;
+  background: color-mix(in srgb, #6a9bb0 22%, var(--bg));
+  border-color: color-mix(in srgb, #6a9bb0 30%, var(--bg));
 }
 .gene-sequence .prose { overflow-wrap: anywhere; }
 .gene-sequence .prose figcaption em { font-style: italic; }
