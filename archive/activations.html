@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Fragment+Mono&family=Host+Grotesk:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Noto+Sans+SC:wght@400;500&family=Noto+Serif+SC:wght@400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/style.css?v=44">
+  <link rel="stylesheet" href="../assets/activation-plots.css?v=1">
   <script>
     window.MathJax = {
       tex: {
@@ -65,9 +66,10 @@
   <div class="prose">
 <h2 id="sigmoid">Sigmoid</h2>
 <p>Sigmoid 是早期神经网络最常用的激活函数之一，它将任意实数映射到 (0, 1) 区间内。</p>
-<figure>
-  <img src="../assets/img/activations/sigmoid.png" alt="Sigmoid 曲线，从接近 0 平滑升到接近 1">
-  <figcaption>图 1. Sigmoid。</figcaption>
+<figure class="fn-plot">
+  <p class="fn-readout">拖动圆点</p>
+  <svg viewBox="0 0 720 320" role="img" aria-label="Sigmoid 曲线，可拖动圆点查看坐标" data-fn="sigmoid" data-xmin="-6" data-xmax="6" data-ymin="-0.08" data-ymax="1.08" data-xticks="-6,-3,0,3,6" data-yticks="0,0.5,1"></svg>
+  <figcaption>图 1. Sigmoid。拖动圆点查看坐标。</figcaption>
 </figure>
 $$f(x) = \frac{1}{1+e^{-x}}$$
 <ul>
@@ -86,9 +88,10 @@ sigmoid = nn.Sigmoid()</code></pre>
 
 <h2 id="softmax">Softmax</h2>
 <p>Softmax 通常用于多分类神经网络的输出层。它可以看作是 Sigmoid 在多分类问题上的推广。对一个包含 𝐾 个元素的向量 𝑧，Softmax 将第 𝑖 个元素转换为：</p>
-<figure>
-  <img src="../assets/img/activations/softmax.png" alt="一组 logits 经过 Softmax 后的概率条形图">
-  <figcaption>图 2. Softmax。横轴是例子里的 logit，纵轴是对应概率。输入为 2、1、0、−1。</figcaption>
+<figure class="fn-plot">
+  <p class="fn-readout">拖动圆点</p>
+  <svg viewBox="0 0 720 320" role="img" aria-label="二分类 Softmax 曲线，另一类 logit 为 0，可拖动圆点查看坐标" data-fn="softmax" data-xmin="-6" data-xmax="6" data-ymin="-0.08" data-ymax="1.08" data-xticks="-6,-3,0,3,6" data-yticks="0,0.5,1"></svg>
+  <figcaption>图 2. 二分类时，把另一类的 logit 固定为 0，Softmax 就是这条曲线，和 Sigmoid 相同。拖动圆点查看坐标。</figcaption>
 </figure>
 $$f(z_i) = \frac{e^{z_i}}{\sum_{j=1}^{K} e^{z_j}}$$
 <ul>
@@ -102,9 +105,10 @@ softmax = nn.Softmax(dim=1)</code></pre>
 
 <h2 id="tanh">Tanh</h2>
 <p>Tanh 函数的形状和 Sigmoid 很像，也是一个 S 型曲线，但它是零中心化的。</p>
-<figure>
-  <img src="../assets/img/activations/tanh.png" alt="Tanh 曲线，关于原点对称，从 −1 升到 1">
-  <figcaption>图 3. Tanh。</figcaption>
+<figure class="fn-plot">
+  <p class="fn-readout">拖动圆点</p>
+  <svg viewBox="0 0 720 320" role="img" aria-label="Tanh 曲线，可拖动圆点查看坐标" data-fn="tanh" data-xmin="-6" data-xmax="6" data-ymin="-1.2" data-ymax="1.2" data-xticks="-6,-3,0,3,6" data-yticks="-1,0,1"></svg>
+  <figcaption>图 3. Tanh。拖动圆点查看坐标。</figcaption>
 </figure>
 $$f(x) = \frac{e^{x}-e^{-x}}{e^{x}+e^{-x}}$$
 <ul>
@@ -117,9 +121,10 @@ tanh = nn.Tanh()</code></pre>
 
 <h2 id="relu">ReLU</h2>
 <p>ReLU（修正线性单元）是目前深度学习中最流行的隐藏层激活函数。</p>
-<figure>
-  <img src="../assets/img/activations/relu.png" alt="ReLU 曲线，负半轴为 0，正半轴为直线">
-  <figcaption>图 4. ReLU。</figcaption>
+<figure class="fn-plot">
+  <p class="fn-readout">拖动圆点</p>
+  <svg viewBox="0 0 720 320" role="img" aria-label="ReLU 曲线，可拖动圆点查看坐标" data-fn="relu" data-xmin="-6" data-xmax="6" data-ymin="-1" data-ymax="6.4" data-xticks="-6,-3,0,3,6" data-yticks="0,3,6"></svg>
+  <figcaption>图 4. ReLU。拖动圆点查看坐标。</figcaption>
 </figure>
 $$f(x) = \max(0, x)$$
 <ul>
@@ -138,9 +143,10 @@ relu = nn.ReLU()</code></pre>
 
 <h2 id="leaky-relu">Leaky ReLU</h2>
 <p>Leaky ReLU 是为了解决 ReLU 的神经元死亡问题而提出的改进版本。𝛼 是一个很小的常数。</p>
-<figure>
-  <img src="../assets/img/activations/leaky-relu.png" alt="Leaky ReLU 曲线，负半轴是一条很缓的斜线">
-  <figcaption>图 5. Leaky ReLU。负半轴斜率画成 0.25，便于看出斜率；文中默认值是 0.01。</figcaption>
+<figure class="fn-plot">
+  <p class="fn-readout">拖动圆点</p>
+  <svg viewBox="0 0 720 320" role="img" aria-label="Leaky ReLU 曲线，可拖动圆点查看坐标" data-fn="leaky" data-xmin="-6" data-xmax="6" data-ymin="-2" data-ymax="6.4" data-xticks="-6,-3,0,3,6" data-yticks="-1,0,3,6"></svg>
+  <figcaption>图 5. Leaky ReLU。负半轴斜率画成 0.25，便于看出斜率；文中默认值是 0.01。拖动圆点查看坐标。</figcaption>
 </figure>
 $$f(x) = \begin{cases} x &amp; x \ge 0 \\ \alpha x &amp; x &lt; 0 \end{cases}$$
 <ul>
@@ -154,9 +160,10 @@ leaky_relu = nn.LeakyReLU(negative_slope=0.01)</code></pre>
 
 <h2 id="prelu">PReLU</h2>
 <p>PReLU 是 Leaky ReLU 的推广，它将负半轴的斜率设为可学习的参数。</p>
-<figure>
-  <img src="../assets/img/activations/prelu.png" alt="PReLU 曲线，负半轴斜率比 Leaky ReLU 更陡">
-  <figcaption>图 6. PReLU。图中 𝑎 = 0.5；训练时 𝑎 可学习。</figcaption>
+<figure class="fn-plot">
+  <p class="fn-readout">拖动圆点</p>
+  <svg viewBox="0 0 720 320" role="img" aria-label="PReLU 曲线，可拖动圆点查看坐标" data-fn="prelu" data-xmin="-6" data-xmax="6" data-ymin="-3.2" data-ymax="6.4" data-xticks="-6,-3,0,3,6" data-yticks="-3,0,3,6"></svg>
+  <figcaption>图 6. PReLU。图中 a = 0.5；训练时 a 可学习。拖动圆点查看坐标。</figcaption>
 </figure>
 $$f(x) = \max(0, x) + a \cdot \min(0, x)$$
 <ul>
@@ -167,9 +174,10 @@ $$f(x) = \max(0, x) + a \cdot \min(0, x)$$
 prelu = nn.PReLU()</code></pre>
 
 <h2 id="elu">ELU</h2>
-<figure>
-  <img src="../assets/img/activations/elu.png" alt="ELU 曲线，负半轴平滑地饱和在 −1 附近">
-  <figcaption>图 7. ELU。</figcaption>
+<figure class="fn-plot">
+  <p class="fn-readout">拖动圆点</p>
+  <svg viewBox="0 0 720 320" role="img" aria-label="ELU 曲线，可拖动圆点查看坐标" data-fn="elu" data-xmin="-6" data-xmax="6" data-ymin="-1.4" data-ymax="6.4" data-xticks="-6,-3,0,3,6" data-yticks="-1,0,3,6"></svg>
+  <figcaption>图 7. ELU。拖动圆点查看坐标。</figcaption>
 </figure>
 $$f(x) = \begin{cases} x &amp; x \ge 0 \\ e^{x}-1 &amp; x &lt; 0 \end{cases}$$
 <ul>
@@ -179,9 +187,10 @@ $$f(x) = \begin{cases} x &amp; x \ge 0 \\ e^{x}-1 &amp; x &lt; 0 \end{cases}$$
 elu = nn.ELU()</code></pre>
 
 <h2 id="selu">SELU</h2>
-<figure>
-  <img src="../assets/img/activations/selu.png" alt="SELU 曲线，负半轴饱和在约 −1.76，正半轴斜率略大于 1">
-  <figcaption>图 8. SELU。负半轴饱和在约 −1.76。</figcaption>
+<figure class="fn-plot">
+  <p class="fn-readout">拖动圆点</p>
+  <svg viewBox="0 0 720 320" role="img" aria-label="SELU 曲线，可拖动圆点查看坐标" data-fn="selu" data-xmin="-6" data-xmax="6" data-ymin="-2.2" data-ymax="6.6" data-xticks="-6,-3,0,3,6" data-yticks="-1.76,0,3,6"></svg>
+  <figcaption>图 8. SELU。负半轴饱和在约 −1.76。拖动圆点查看坐标。</figcaption>
 </figure>
 <ul>
 <li>特点：在特定条件下（配合 LeCun 初始化），SELU 能够实现自归一化，使每一层神经元的激活值自动保持均值 0 和方差 1。</li>
@@ -191,9 +200,10 @@ elu = nn.ELU()</code></pre>
 selu = nn.SELU()</code></pre>
 
 <h2 id="softplus">Softplus</h2>
-<figure>
-  <img src="../assets/img/activations/softplus.png" alt="Softplus 曲线，是一条光滑的 ReLU">
-  <figcaption>图 9. Softplus。</figcaption>
+<figure class="fn-plot">
+  <p class="fn-readout">拖动圆点</p>
+  <svg viewBox="0 0 720 320" role="img" aria-label="Softplus 曲线，可拖动圆点查看坐标" data-fn="softplus" data-xmin="-6" data-xmax="6" data-ymin="-0.4" data-ymax="6.4" data-xticks="-6,-3,0,3,6" data-yticks="0,3,6"></svg>
+  <figcaption>图 9. Softplus。拖动圆点查看坐标。</figcaption>
 </figure>
 $$f(x) = \ln(1+e^{x})$$
 <ul>
@@ -203,9 +213,10 @@ $$f(x) = \ln(1+e^{x})$$
 softplus = nn.Softplus()</code></pre>
 
 <h2 id="gelu">GELU</h2>
-<figure>
-  <img src="../assets/img/activations/gelu.png" alt="GELU 曲线，零点左侧有一小段负值，然后升上直线">
-  <figcaption>图 10. GELU。</figcaption>
+<figure class="fn-plot">
+  <p class="fn-readout">拖动圆点</p>
+  <svg viewBox="0 0 720 320" role="img" aria-label="GELU 曲线，可拖动圆点查看坐标" data-fn="gelu" data-xmin="-6" data-xmax="6" data-ymin="-0.6" data-ymax="6.4" data-xticks="-6,-3,0,3,6" data-yticks="0,3,6"></svg>
+  <figcaption>图 10. GELU。拖动圆点查看坐标。</figcaption>
 </figure>
 <ul>
 <li>原理：引入了概率思想，根据输入的值按高斯分布随机决定是否激活。</li>
@@ -215,9 +226,10 @@ softplus = nn.Softplus()</code></pre>
 gelu = nn.GELU()</code></pre>
 
 <h2 id="silu">Swish / SiLU</h2>
-<figure>
-  <img src="../assets/img/activations/silu.png" alt="SiLU 曲线，零点左侧略低于 0，然后平滑上升">
-  <figcaption>图 11. Swish / SiLU。</figcaption>
+<figure class="fn-plot">
+  <p class="fn-readout">拖动圆点</p>
+  <svg viewBox="0 0 720 320" role="img" aria-label="SiLU 曲线，可拖动圆点查看坐标" data-fn="silu" data-xmin="-6" data-xmax="6" data-ymin="-0.6" data-ymax="6.4" data-xticks="-6,-3,0,3,6" data-yticks="0,3,6"></svg>
+  <figcaption>图 11. Swish / SiLU。拖动圆点查看坐标。</figcaption>
 </figure>
 $$f(x) = x \cdot \mathrm{Sigmoid}(x)$$
 <ul>
@@ -228,9 +240,10 @@ $$f(x) = x \cdot \mathrm{Sigmoid}(x)$$
 silu = nn.SiLU()</code></pre>
 
 <h2 id="mish">Mish</h2>
-<figure>
-  <img src="../assets/img/activations/mish.png" alt="Mish 曲线，形状接近 SiLU，零点左侧有一段浅的负值">
-  <figcaption>图 12. Mish。</figcaption>
+<figure class="fn-plot">
+  <p class="fn-readout">拖动圆点</p>
+  <svg viewBox="0 0 720 320" role="img" aria-label="Mish 曲线，可拖动圆点查看坐标" data-fn="mish" data-xmin="-6" data-xmax="6" data-ymin="-0.6" data-ymax="6.4" data-xticks="-6,-3,0,3,6" data-yticks="0,3,6"></svg>
+  <figcaption>图 12. Mish。拖动圆点查看坐标。</figcaption>
 </figure>
 $$f(x) = x \cdot \tanh(\mathrm{Softplus}(x))$$
 <ul>
@@ -241,9 +254,10 @@ mish = nn.Mish()</code></pre>
 
 <h2 id="hardswish">Hard Swish</h2>
 <p>Hard Swish（H-Swish）是 MobileNetV3 的核心优化点。它在保留 Swish 性能的同时，大幅提升了推理速度。</p>
-<figure>
-  <img src="../assets/img/activations/hardswish.png" alt="Hard Swish 曲线，−3 以左为 0，3 以右为直线，中间是一段平滑过渡">
-  <figcaption>图 13. Hard Swish。</figcaption>
+<figure class="fn-plot">
+  <p class="fn-readout">拖动圆点</p>
+  <svg viewBox="0 0 720 320" role="img" aria-label="Hard Swish 曲线，可拖动圆点查看坐标" data-fn="hardswish" data-xmin="-6" data-xmax="6" data-ymin="-0.8" data-ymax="6.4" data-xticks="-6,-3,0,3,6" data-yticks="0,3,6"></svg>
+  <figcaption>图 13. Hard Swish。拖动圆点查看坐标。</figcaption>
 </figure>
 $$f(x) = \frac{x \cdot \mathrm{ReLU6}(x+3)}{6}$$
 <pre><code>import torch.nn as nn
@@ -256,5 +270,6 @@ hardswish = nn.Hardswish()</code></pre>
     <span>© 2021–2026 zyzhou</span>
     <span>dum spiro, spero.</span>
   </footer>
+  <script src="../assets/activation-plots.js?v=1"></script>
 </body>
 </html>
