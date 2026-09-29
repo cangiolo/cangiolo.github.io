@@ -62,7 +62,7 @@
   <p class="article-kicker">ARCHIVE / SEPTEMBER 2026</p>
   <h1>激活函数汇总</h1>
   <p class="article-dek">形状、输出范围，以及 PyTorch 里对应的层。</p>
-  <p class="article-meta"><span>zyzhou</span><span class="sep"></span><time datetime="2026-09-29">29 Sep 2026</time><span class="sep"></span><span>约 700 字</span><span class="sep"></span><span>2 min read</span></p>
+  <p class="article-meta"><span>zyzhou</span><span class="sep"></span><time datetime="2026-09-29">29 Sep 2026</time><span class="sep"></span><span>约 800 字</span><span class="sep"></span><span>2 min read</span></p>
   <div class="prose">
 <h2 id="sigmoid">Sigmoid</h2>
 <p>Sigmoid 把任意实数映到 (0, 1)。输出落在这个区间，所以它常放在二分类的输出层，把数值读成属于正类的概率。</p>
@@ -71,7 +71,12 @@
   <figcaption>图 1. Sigmoid。</figcaption>
 </figure>
 $$f(x) = \frac{1}{1+e^{-x}}$$
-<p>函数平滑、可导。输入很大或很小时梯度接近 0，深层网络反向传播时参数几乎不再更新。输出又全是正数，不是零中心的，梯度更新容易来回摆。指数运算也比后面的阈值函数贵。</p>
+<p>函数平滑、可导。输入很大或很小时梯度接近 0，深层网络反向传播时参数几乎不再更新。指数运算也比后面的阈值函数贵。</p>
+<p>输出又全是正数，不是零中心的。下一层若只看到正的输入，这一层每个权重的梯度就同号：一步里只能一起增大，或一起减小。最优点若要求其中一个变大、另一个变小，就只能先集体走偏，再集体拉回。参数空间里的轨迹因此是折线，而不是直达。<sup class="ref"><a href="#ref-1">[1]</a></sup></p>
+<figure>
+  <img src="../assets/img/zigzag-gradient.png" alt="权重空间中的折线更新：绿线直达最优点，红线来回折返">
+  <figcaption>权重 𝑤₀、𝑤₁ 的更新。绿线直达最优点，红线是梯度同号时的折线。<sup class="ref"><a href="#ref-1">[1]</a></sup></figcaption>
+</figure>
 <pre><code>import torch.nn as nn
 sigmoid = nn.Sigmoid()</code></pre>
 
@@ -196,9 +201,15 @@ mish = nn.Mish()</code></pre>
 $$f(x) = \frac{x \cdot \mathrm{ReLU6}(x+3)}{6}$$
 <pre><code>import torch.nn as nn
 hardswish = nn.Hardswish()</code></pre>
+<h2 class="refs-title" id="references">参考资料</h2>
+<p class="ref-item" id="ref-1">[1]. <a href="https://liam.page/2018/04/17/zero-centered-active-function/">谈谈激活函数以零为中心的问题</a></p>
   </div>
     </article>
     </div>
+    <aside class="refs-rail">
+      <h2 class="refs-title">参考资料</h2>
+      <p class="ref-item">[1]. <a href="https://liam.page/2018/04/17/zero-centered-active-function/">谈谈激活函数以零为中心的问题</a></p>
+    </aside>
   </div>
   <footer class="foot">
     <span>© 2021–2026 zyzhou</span>
