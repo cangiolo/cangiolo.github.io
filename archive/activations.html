@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>十三大激活函数汇总 · zyzhou</title>
+  <title>激活函数汇总 · zyzhou</title>
   <meta name="robots" content="noindex">
   <meta name="description" content="dum spiro, spero. — zyzhou’s notes">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -59,12 +59,16 @@
     <article class="post">
   <a class="article-back" href="index.html">← Back</a>
   <p class="article-kicker">ARCHIVE / SEPTEMBER 2026</p>
-  <h1>十三大激活函数汇总</h1>
+  <h1>激活函数汇总</h1>
   <p class="article-dek">输出范围、优缺点，以及 PyTorch 里对应的层。</p>
   <p class="article-meta"><span>zyzhou</span><span class="sep"></span><time datetime="2026-09-29">29 Sep 2026</time><span class="sep"></span><span>约 1100 字</span><span class="sep"></span><span>3 min read</span></p>
   <div class="prose">
 <h2 id="sigmoid">Sigmoid</h2>
 <p>Sigmoid 是早期神经网络最常用的激活函数之一，它将任意实数映射到 (0, 1) 区间内。</p>
+<figure>
+  <img src="../assets/img/activations/sigmoid.png" alt="Sigmoid 曲线，从接近 0 平滑升到接近 1">
+  <figcaption>图 1. Sigmoid。</figcaption>
+</figure>
 $$f(x) = \frac{1}{1+e^{-x}}$$
 <ul>
 <li>输出范围 (0, 1)。由于输出在这个区间，它常被用作二分类任务的输出层，表示属于正类的概率。</li>
@@ -82,6 +86,10 @@ sigmoid = nn.Sigmoid()</code></pre>
 
 <h2 id="softmax">Softmax</h2>
 <p>Softmax 通常用于多分类神经网络的输出层。它可以看作是 Sigmoid 在多分类问题上的推广。对一个包含 𝐾 个元素的向量 𝑧，Softmax 将第 𝑖 个元素转换为：</p>
+<figure>
+  <img src="../assets/img/activations/softmax.png" alt="一组 logits 经过 Softmax 后的概率条形图">
+  <figcaption>图 2. Softmax。横轴是例子里的 logit，纵轴是对应概率。输入为 2、1、0、−1。</figcaption>
+</figure>
 $$f(z_i) = \frac{e^{z_i}}{\sum_{j=1}^{K} e^{z_j}}$$
 <ul>
 <li>输出范围 (0, 1)，并且所有输出元素的总和为 1。</li>
@@ -94,6 +102,10 @@ softmax = nn.Softmax(dim=1)</code></pre>
 
 <h2 id="tanh">Tanh</h2>
 <p>Tanh 函数的形状和 Sigmoid 很像，也是一个 S 型曲线，但它是零中心化的。</p>
+<figure>
+  <img src="../assets/img/activations/tanh.png" alt="Tanh 曲线，关于原点对称，从 −1 升到 1">
+  <figcaption>图 3. Tanh。</figcaption>
+</figure>
 $$f(x) = \frac{e^{x}-e^{-x}}{e^{x}+e^{-x}}$$
 <ul>
 <li>输出范围 (−1, 1)。</li>
@@ -105,6 +117,10 @@ tanh = nn.Tanh()</code></pre>
 
 <h2 id="relu">ReLU</h2>
 <p>ReLU（修正线性单元）是目前深度学习中最流行的隐藏层激活函数。</p>
+<figure>
+  <img src="../assets/img/activations/relu.png" alt="ReLU 曲线，负半轴为 0，正半轴为直线">
+  <figcaption>图 4. ReLU。</figcaption>
+</figure>
 $$f(x) = \max(0, x)$$
 <ul>
 <li>输出范围 [0, +∞)。当输入为正数时，原样输出；当输入为负数时，输出为 0。</li>
@@ -122,6 +138,10 @@ relu = nn.ReLU()</code></pre>
 
 <h2 id="leaky-relu">Leaky ReLU</h2>
 <p>Leaky ReLU 是为了解决 ReLU 的神经元死亡问题而提出的改进版本。𝛼 是一个很小的常数。</p>
+<figure>
+  <img src="../assets/img/activations/leaky-relu.png" alt="Leaky ReLU 曲线，负半轴是一条很缓的斜线">
+  <figcaption>图 5. Leaky ReLU。负半轴斜率画成 0.25，便于看出斜率；文中默认值是 0.01。</figcaption>
+</figure>
 $$f(x) = \begin{cases} x &amp; x \ge 0 \\ \alpha x &amp; x &lt; 0 \end{cases}$$
 <ul>
 <li>输出范围 (−∞, +∞)。</li>
@@ -134,6 +154,10 @@ leaky_relu = nn.LeakyReLU(negative_slope=0.01)</code></pre>
 
 <h2 id="prelu">PReLU</h2>
 <p>PReLU 是 Leaky ReLU 的推广，它将负半轴的斜率设为可学习的参数。</p>
+<figure>
+  <img src="../assets/img/activations/prelu.png" alt="PReLU 曲线，负半轴斜率比 Leaky ReLU 更陡">
+  <figcaption>图 6. PReLU。图中 𝑎 = 0.5；训练时 𝑎 可学习。</figcaption>
+</figure>
 $$f(x) = \max(0, x) + a \cdot \min(0, x)$$
 <ul>
 <li>参数 𝑎 随着网络训练自动调整。</li>
@@ -143,6 +167,10 @@ $$f(x) = \max(0, x) + a \cdot \min(0, x)$$
 prelu = nn.PReLU()</code></pre>
 
 <h2 id="elu">ELU</h2>
+<figure>
+  <img src="../assets/img/activations/elu.png" alt="ELU 曲线，负半轴平滑地饱和在 −1 附近">
+  <figcaption>图 7. ELU。</figcaption>
+</figure>
 $$f(x) = \begin{cases} x &amp; x \ge 0 \\ e^{x}-1 &amp; x &lt; 0 \end{cases}$$
 <ul>
 <li>优点：在负值区域具有平滑的饱和特性，使得输出均值更接近 0。相比 ReLU，它能更快地收敛并获得更好的泛化性能。</li>
@@ -151,6 +179,10 @@ $$f(x) = \begin{cases} x &amp; x \ge 0 \\ e^{x}-1 &amp; x &lt; 0 \end{cases}$$
 elu = nn.ELU()</code></pre>
 
 <h2 id="selu">SELU</h2>
+<figure>
+  <img src="../assets/img/activations/selu.png" alt="SELU 曲线，负半轴饱和在约 −1.76，正半轴斜率略大于 1">
+  <figcaption>图 8. SELU。负半轴饱和在约 −1.76。</figcaption>
+</figure>
 <ul>
 <li>特点：在特定条件下（配合 LeCun 初始化），SELU 能够实现自归一化，使每一层神经元的激活值自动保持均值 0 和方差 1。</li>
 <li>适用：非常适合极深的稠密全连接网络，也就是自归一化网络。</li>
@@ -159,6 +191,10 @@ elu = nn.ELU()</code></pre>
 selu = nn.SELU()</code></pre>
 
 <h2 id="softplus">Softplus</h2>
+<figure>
+  <img src="../assets/img/activations/softplus.png" alt="Softplus 曲线，是一条光滑的 ReLU">
+  <figcaption>图 9. Softplus。</figcaption>
+</figure>
 $$f(x) = \ln(1+e^{x})$$
 <ul>
 <li>特点：ReLU 的全定义域可导光滑版本。虽然计算量略大，但在一些需要高阶导数平滑性的物理建模或生成模型中表现良好。</li>
@@ -167,6 +203,10 @@ $$f(x) = \ln(1+e^{x})$$
 softplus = nn.Softplus()</code></pre>
 
 <h2 id="gelu">GELU</h2>
+<figure>
+  <img src="../assets/img/activations/gelu.png" alt="GELU 曲线，零点左侧有一小段负值，然后升上直线">
+  <figcaption>图 10. GELU。</figcaption>
+</figure>
 <ul>
 <li>原理：引入了概率思想，根据输入的值按高斯分布随机决定是否激活。</li>
 <li>地位：它是 BERT、GPT 和 Vision Transformer（ViT）等主流 Transformer 架构的默认标配。</li>
@@ -175,6 +215,10 @@ softplus = nn.Softplus()</code></pre>
 gelu = nn.GELU()</code></pre>
 
 <h2 id="silu">Swish / SiLU</h2>
+<figure>
+  <img src="../assets/img/activations/silu.png" alt="SiLU 曲线，零点左侧略低于 0，然后平滑上升">
+  <figcaption>图 11. Swish / SiLU。</figcaption>
+</figure>
 $$f(x) = x \cdot \mathrm{Sigmoid}(x)$$
 <ul>
 <li>特点：具备无上界、有下界、平滑、非单调的特性。</li>
@@ -184,6 +228,10 @@ $$f(x) = x \cdot \mathrm{Sigmoid}(x)$$
 silu = nn.SiLU()</code></pre>
 
 <h2 id="mish">Mish</h2>
+<figure>
+  <img src="../assets/img/activations/mish.png" alt="Mish 曲线，形状接近 SiLU，零点左侧有一段浅的负值">
+  <figcaption>图 12. Mish。</figcaption>
+</figure>
 $$f(x) = x \cdot \tanh(\mathrm{Softplus}(x))$$
 <ul>
 <li>特点：被认为比 Swish 更加平滑。在很多视觉公开基准测试中，Mish 的表现略优于 ReLU 和 Swish，但计算成本也稍高。</li>
@@ -193,6 +241,10 @@ mish = nn.Mish()</code></pre>
 
 <h2 id="hardswish">Hard Swish</h2>
 <p>Hard Swish（H-Swish）是 MobileNetV3 的核心优化点。它在保留 Swish 性能的同时，大幅提升了推理速度。</p>
+<figure>
+  <img src="../assets/img/activations/hardswish.png" alt="Hard Swish 曲线，−3 以左为 0，3 以右为直线，中间是一段平滑过渡">
+  <figcaption>图 13. Hard Swish。</figcaption>
+</figure>
 $$f(x) = \frac{x \cdot \mathrm{ReLU6}(x+3)}{6}$$
 <pre><code>import torch.nn as nn
 hardswish = nn.Hardswish()</code></pre>
