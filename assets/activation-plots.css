@@ -1,3 +1,7 @@
+.fn-plot, .fn-plot * {
+  user-select: none;
+  -webkit-user-select: none;
+}
 .fn-plot svg {
   width: 100%;
   height: auto;
@@ -6,13 +10,6 @@
   cursor: grab;
 }
 .fn-plot svg:active { cursor: grabbing; }
-.fn-readout {
-  margin: 0 0 0.35rem;
-  font-family: var(--mono);
-  font-size: 0.78rem;
-  color: var(--ink);
-  text-align: left;
-}
 .fn-curve {
   fill: none;
   stroke: var(--ink);
@@ -35,6 +32,11 @@
 .fn-handle {
   fill: var(--bg);
   stroke: var(--accent);
-  stroke-width: 2px;
+  stroke-width: 1.5px;
   vector-effect: non-scaling-stroke;
+}
+.fn-readout {
+  fill: var(--ink);
+  font-family: var(--mono);
+  font-size: 13px;
 }

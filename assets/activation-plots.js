@@ -72,16 +72,17 @@
       d.push((i ? "L" : "M") + sx(x).toFixed(1) + " " + sy(fn(x)).toFixed(1));
     }
     svg.appendChild(el("path", { class: "fn-curve", d: d.join(" ") }));
-    var handle = el("circle", { class: "fn-handle", r: "11" });
+    var handle = el("circle", { class: "fn-handle", r: "6" });
     svg.appendChild(handle);
-    var readout = svg.parentNode.querySelector(".fn-readout");
+    var readout = el("text", { class: "fn-readout", x: ML, y: MT + 14 });
+    svg.appendChild(readout);
 
     function setX(x) {
       x = Math.min(xmax, Math.max(xmin, x));
       var y = fn(x);
       handle.setAttribute("cx", sx(x).toFixed(1));
       handle.setAttribute("cy", sy(y).toFixed(1));
-      if (readout) readout.textContent = "x = " + x.toFixed(2) + "，f(x) = " + y.toFixed(2);
+      if (readout) readout.textContent = "x = " + x.toFixed(2) + ", f(x) = " + y.toFixed(2);
     }
     function xFromEvent(event) {
       var point = svg.createSVGPoint();
@@ -94,6 +95,7 @@
     }
     setX(0);
     svg.addEventListener("pointerdown", function (event) {
+      event.preventDefault();
       svg.setPointerCapture(event.pointerId);
       svg.dataset.dragging = "1";
       setX(xFromEvent(event));
