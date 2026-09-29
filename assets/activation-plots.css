@@ -1,3 +1,37 @@
+.wide-refs.layout-article {
+  max-width: 1920px;
+  padding-left: 300px;
+}
+.wide-refs .left-stack {
+  width: 190px;
+  max-height: calc(100vh - 90px);
+  overflow-y: auto;
+}
+.wide-refs .side-toc {
+  align-items: stretch;
+  text-align: left;
+}
+.wide-refs .side-toc::before {
+  align-self: stretch;
+  text-align: center;
+}
+.wide-refs .side-toc a {
+  align-self: stretch;
+  text-align: left;
+}
+.wide-refs .refs-rail {
+  width: 450px;
+  max-height: calc(100vh - 90px);
+  overflow-y: auto;
+}
+.wide-refs .post > h1 { line-height: 1.25; }
+@media (max-width: 900px) {
+  .wide-refs.layout-article { padding-left: 22px; }
+  .wide-refs .left-stack { width: 100%; position: static; max-height: none; overflow: visible; }
+  .wide-refs .wrap { width: 100%; padding: 0; }
+  .wide-refs .refs-rail { width: 100%; max-height: none; overflow: visible; }
+}
+
 .fn-plot, .fn-plot * {
   user-select: none;
   -webkit-user-select: none;
