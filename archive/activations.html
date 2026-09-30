@@ -121,10 +121,10 @@ $$f(x) = \begin{cases} x &amp; x \ge 0 \\ \alpha x &amp; x &lt; 0 \end{cases}$$
 leaky_relu = nn.LeakyReLU(negative_slope=0.01)</code></pre>
 
 <h2 id="prelu">PReLU</h2>
-<p>PReLU 把负半轴斜率 𝑎 做成可学习参数，训练中自己调整，不必事先指定。</p>
+<p>PReLU 把负半轴斜率 𝑎 做成可学习参数，训练中自己调整，不必事先指定。图里这条曲线取 𝑎 = 0.5，只是为了把斜率画出来。</p>
 <figure class="fn-plot">
   <svg viewBox="0 0 720 320" role="img" aria-label="PReLU 曲线，可拖动圆点查看坐标" data-fn="prelu" data-xmin="-6" data-xmax="6" data-ymin="-3.2" data-ymax="6.4" data-xticks="-6,-3,0,3,6" data-yticks="-3,0,3,6"></svg>
-  <figcaption>图 6. 图中 𝑎 = 0.5；训练时 𝑎 可学习。</figcaption>
+  <figcaption>图 6. PReLU。</figcaption>
 </figure>
 $$f(x) = \max(0, x) + a \cdot \min(0, x)$$
 <pre><code>import torch.nn as nn
