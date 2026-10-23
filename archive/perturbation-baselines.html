@@ -1008,145 +1008,145 @@ DEG 权重               TD 不参与，避免泄漏</code></pre>
 <h2 id="sec-metrics">指标释义（18 项）</h2>
 <p>下列定义对齐 Miller Methods 与本复现 REPORT：真值为 GT 半伪批量；对照为 <code>ctrl_baseline</code>；Δpert 参考本折训练 Mean；权重为 GT |t| min–max 后再平方；DEG 为 adjusted-P 最小 100 个；R² 下限 −1；NIR/PDS 严格小于、排除自身、平局不计。公式按操作定义写出；加权与检索的实现细节以 REPORT / 上游 <code>data_manager.py</code> 为准。</p>
 <h3 id="metric-mse">MSE：均方误差</h3>
-<p><strong>意义。</strong>预测与真值在全部基因上的均方误差，越低越好。</p>
-<p><strong>计算过程。</strong>对每个测试扰动，取 GT 半的伪批量表达 y 与预测 ŷ，在全基因组上算 (ŷ−y)² 的均值；再对扰动等权平均。</p>
-<p><strong>公式。</strong></p>
+<p>意义：预测与真值在全部基因上的均方误差，越低越好。</p>
+<p>计算过程：对每个测试扰动，取 GT 半的伪批量表达 y 与预测 ŷ，在全基因组上算 (ŷ−y)² 的均值；再对扰动等权平均。</p>
+<p>公式：</p>
 $$
 \mathrm{MSE}(\hat y,y)=\frac1G\sum_{g=1}^{G}(\hat y_g-y_g)^2
 $$
 
 <h3 id="metric-wmse">WMSE：加权均方误差</h3>
-<p><strong>意义。</strong>按扰动效应强弱给基因加权的 MSE，强调强扰动基因上的误差。</p>
-<p><strong>计算过程。</strong>权重来自 GT 半相对其余非对照扰动的 t-test_overestim_var：对 |t| 做 min–max 归一化后再平方；再算加权 MSE。Miller Methods 称 weighted error metrics 与先验 WMSE 工作一致。</p>
-<p><strong>公式。</strong></p>
+<p>意义：按扰动效应强弱给基因加权的 MSE，强调强扰动基因上的误差。</p>
+<p>计算过程：权重来自 GT 半相对其余非对照扰动的 t-test_overestim_var：对 |t| 做 min–max 归一化后再平方；再算加权 MSE。Miller Methods 称 weighted error metrics 与先验 WMSE 工作一致。</p>
+<p>公式：</p>
 $$
 w_g=\Bigl(\mathrm{minmax}(|t_g|)\Bigr)^2,\quad \mathrm{WMSE}=\frac{\sum_g w_g(\hat y_g-y_g)^2}{\sum_g w_g}
 $$
 
 <h3 id="metric-mae">MAE：平均绝对误差</h3>
-<p><strong>意义。</strong>全基因绝对误差均值；Miller 认为整体校准弱于 MSE。</p>
-<p><strong>计算过程。</strong>与 MSE 相同的 y / ŷ，改为 |ŷ−y| 的均值。</p>
-<p><strong>公式。</strong></p>
+<p>意义：全基因绝对误差均值；Miller 认为整体校准弱于 MSE。</p>
+<p>计算过程：与 MSE 相同的 y / ŷ，改为 |ŷ−y| 的均值。</p>
+<p>公式：</p>
 $$
 \mathrm{MAE}(\hat y,y)=\frac1G\sum_{g=1}^{G}|\hat y_g-y_g|
 $$
 
 <h3 id="metric-wmae">WMAE：加权平均绝对误差</h3>
-<p><strong>意义。</strong>与 WMSE 同权重的加权 MAE。</p>
-<p><strong>计算过程。</strong>权重定义同 WMSE；误差改为绝对误差。</p>
-<p><strong>公式。</strong></p>
+<p>意义：与 WMSE 同权重的加权 MAE。</p>
+<p>计算过程：权重定义同 WMSE；误差改为绝对误差。</p>
+<p>公式：</p>
 $$
 \mathrm{WMAE}=\frac{\sum_g w_g|\hat y_g-y_g|}{\sum_g w_g}
 $$
 
 <h3 id="metric-pearson-dctrl">Pearson(Δctrl)：相对对照的 Pearson 相关</h3>
-<p><strong>意义。</strong>预测与真值相对对照基线的位移向量的相关系数；衡量方向与相对幅度。</p>
-<p><strong>计算过程。</strong>Δctrl：ŷ−μ_c 与 y−μ_c，μ_c 为对照细胞均值（ctrl_baseline）。零向量时未定义（如 Control 自身）。</p>
-<p><strong>公式。</strong></p>
+<p>意义：预测与真值相对对照基线的位移向量的相关系数；衡量方向与相对幅度。</p>
+<p>计算过程：Δctrl：ŷ−μ_c 与 y−μ_c，μ_c 为对照细胞均值（ctrl_baseline）。零向量时未定义（如 Control 自身）。</p>
+<p>公式：</p>
 $$
 \mathrm{Pearson}(\Delta\mathrm{ctrl})=\mathrm{corr}(\hat y-\mu_c,\; y-\mu_c)
 $$
 
 <h3 id="metric-pearson-dpert">Pearson(Δpert)：相对训练均值的 Pearson 相关</h3>
-<p><strong>意义。</strong>相对本折训练扰动均值 μ_all 的位移相关；用于减弱对照偏置。</p>
-<p><strong>计算过程。</strong>Δpert：ŷ−μ_all 与 y−μ_all。Mean 基线自身该指标未定义。</p>
-<p><strong>公式。</strong></p>
+<p>意义：相对本折训练扰动均值 μ_all 的位移相关；用于减弱对照偏置。</p>
+<p>计算过程：Δpert：ŷ−μ_all 与 y−μ_all。Mean 基线自身该指标未定义。</p>
+<p>公式：</p>
 $$
 \mathrm{Pearson}(\Delta\mathrm{pert})=\mathrm{corr}(\hat y-\mu_{\mathrm{all}},\; y-\mu_{\mathrm{all}})
 $$
 
 <h3 id="metric-r2-dctrl">R²(Δctrl)：相对对照的决定系数</h3>
-<p><strong>意义。</strong>Δctrl 空间上的拟合优度；惩罚尺度偏差。</p>
-<p><strong>计算过程。</strong>在 Δctrl 向量上算 R²；本复现实现下限截断为 −1。</p>
-<p><strong>公式。</strong></p>
+<p>意义：Δctrl 空间上的拟合优度；惩罚尺度偏差。</p>
+<p>计算过程：在 Δctrl 向量上算 R²；本复现实现下限截断为 −1。</p>
+<p>公式：</p>
 $$
 R^2(\Delta\mathrm{ctrl})=1-\frac{\lVert(\hat y-\mu_c)-(y-\mu_c)\rVert_2^2}{\lVert(y-\mu_c)-\overline{(y-\mu_c)}\rVert_2^2}\quad(\ge -1)
 $$
 
 <h3 id="metric-r2-dpert">R²(Δpert)：相对训练均值的决定系数</h3>
-<p><strong>意义。</strong>Δpert 空间上的 R²。</p>
-<p><strong>计算过程。</strong>参考基线换为本折 μ_all；同样截断 −1。</p>
-<p><strong>公式。</strong></p>
+<p>意义：Δpert 空间上的 R²。</p>
+<p>计算过程：参考基线换为本折 μ_all；同样截断 −1。</p>
+<p>公式：</p>
 $$
 R^2(\Delta\mathrm{pert})=1-\frac{\lVert(\hat y-\mu_{\mathrm{all}})-(y-\mu_{\mathrm{all}})\rVert_2^2}{\mathrm{Var}(y-\mu_{\mathrm{all}})}\quad(\ge -1)
 $$
 
 <h3 id="metric-wr2-dctrl">WR²(Δctrl)：加权 R²（Δctrl）</h3>
-<p><strong>意义。</strong>与 WMSE 同权重的加权 R²，在对照位移上评估。</p>
-<p><strong>计算过程。</strong>基因权重 w_g 同 WMSE；在 Δctrl 上算加权残差与加权总变差。</p>
-<p><strong>公式。</strong></p>
+<p>意义：与 WMSE 同权重的加权 R²，在对照位移上评估。</p>
+<p>计算过程：基因权重 w_g 同 WMSE；在 Δctrl 上算加权残差与加权总变差。</p>
+<p>公式：</p>
 $$
 \mathrm{WR}^2(\Delta\mathrm{ctrl})=1-\frac{\sum_g w_g\bigl((\hat y_g-\mu_{c,g})-(y_g-\mu_{c,g})\bigr)^2}{\sum_g w_g(y_g-\mu_{c,g}-\overline{\cdot})^2}
 $$
 
 <h3 id="metric-wr2-dpert">WR²(Δpert)：加权 R²（Δpert）</h3>
-<p><strong>意义。</strong>加权 R²，参考为本折训练均值。</p>
-<p><strong>计算过程。</strong>权重同 WMSE；位移相对 μ_all。</p>
-<p><strong>公式。</strong></p>
+<p>意义：加权 R²，参考为本折训练均值。</p>
+<p>计算过程：权重同 WMSE；位移相对 μ_all。</p>
+<p>公式：</p>
 $$
 \mathrm{WR}^2(\Delta\mathrm{pert})=1-\frac{\sum_g w_g\bigl((\hat y_g-\mu_{\mathrm{all},g})-(y_g-\mu_{\mathrm{all},g})\bigr)^2}{\sum_g w_g(y_g-\mu_{\mathrm{all},g}-\overline{\cdot})^2}
 $$
 
 <h3 id="metric-nir">NIR：归一化逆秩（检索）</h3>
-<p><strong>意义。</strong>预测是否在欧氏距离上最近于正确扰动真值；反映全局扰动景观结构。</p>
-<p><strong>计算过程。</strong>对每个预测，算到所有候选 GT 的 L2 距离；正确匹配距离严格小于其余（排除自身）计成功；平局不计。拼接口径用全汇集候选。</p>
-<p><strong>公式。</strong></p>
+<p>意义：预测是否在欧氏距离上最近于正确扰动真值；反映全局扰动景观结构。</p>
+<p>计算过程：对每个预测，算到所有候选 GT 的 L2 距离；正确匹配距离严格小于其余（排除自身）计成功；平局不计。拼接口径用全汇集候选。</p>
+<p>公式：</p>
 $$
 \mathrm{NIR}=\mathbb{P}\bigl[\,d_2(\hat y,y_i)\lt d_2(\hat y,y_j)\;\forall j\neq i\,\bigr]
 $$
 
 <h3 id="metric-pds">PDS：扰动判别分数</h3>
-<p><strong>意义。</strong>与 NIR 同结构，距离改为曼哈顿距离（L1）；STATE / VCC 所用。</p>
-<p><strong>计算过程。</strong>严格小于、排除自身、平局不计；与 NIR 仅距离定义不同。</p>
-<p><strong>公式。</strong></p>
+<p>意义：与 NIR 同结构，距离改为曼哈顿距离（L1）；STATE / VCC 所用。</p>
+<p>计算过程：严格小于、排除自身、平局不计；与 NIR 仅距离定义不同。</p>
+<p>公式：</p>
 $$
 \mathrm{PDS}=\mathbb{P}\bigl[\,d_1(\hat y,y_i)\ltd_1(\hat y,y_j)\;\forall j\neq i\,\bigr]
 $$
 
 <h3 id="metric-mse-degs">MSE(DEGs)：均方误差（DEGs）</h3>
-<p><strong>意义。</strong>只在 top-100 DEG 子集上的 MSE。</p>
-<p><strong>计算过程。</strong>DEG 取 GT 半 adjusted-P 最小的 100 个基因；子集上算未加权 MSE。绝对分常与 Miller 文印刷 DEG 不对齐。</p>
-<p><strong>公式。</strong></p>
+<p>意义：只在 top-100 DEG 子集上的 MSE。</p>
+<p>计算过程：DEG 取 GT 半 adjusted-P 最小的 100 个基因；子集上算未加权 MSE。绝对分常与 Miller 文印刷 DEG 不对齐。</p>
+<p>公式：</p>
 $$
 \mathrm{MSE}_{\mathrm{DEG}}=\frac1{100}\sum_{g\in\mathrm{DEG}_{100}}(\hat y_g-y_g)^2
 $$
 
 <h3 id="metric-mae-degs">MAE(DEGs)：平均绝对误差（DEGs）</h3>
-<p><strong>意义。</strong>top-100 DEG 上的 MAE。</p>
-<p><strong>计算过程。</strong>同一 DEG 子集，改绝对误差。</p>
-<p><strong>公式。</strong></p>
+<p>意义：top-100 DEG 上的 MAE。</p>
+<p>计算过程：同一 DEG 子集，改绝对误差。</p>
+<p>公式：</p>
 $$
 \mathrm{MAE}_{\mathrm{DEG}}=\frac1{100}\sum_{g\in\mathrm{DEG}_{100}}|\hat y_g-y_g|
 $$
 
 <h3 id="metric-pearson-dctrl-degs">Pearson(Δctrl DEGs)：DEG 上相对对照 Pearson</h3>
-<p><strong>意义。</strong>DEG 子集上的 Pearson(Δctrl)。</p>
-<p><strong>计算过程。</strong>仅在 top-100 DEG 维上算 corr(ŷ−μ_c, y−μ_c)。</p>
-<p><strong>公式。</strong></p>
+<p>意义：DEG 子集上的 Pearson(Δctrl)。</p>
+<p>计算过程：仅在 top-100 DEG 维上算 corr(ŷ−μ_c, y−μ_c)。</p>
+<p>公式：</p>
 $$
 \mathrm{corr}\bigl((\hat y-\mu_c)_{\mathrm{DEG}},\,(y-\mu_c)_{\mathrm{DEG}}\bigr)
 $$
 
 <h3 id="metric-pearson-dpert-degs">Pearson(Δpert DEGs)：DEG 上相对均值 Pearson</h3>
-<p><strong>意义。</strong>DEG 子集上的 Pearson(Δpert)。</p>
-<p><strong>计算过程。</strong>参考 μ_all；Mean 自身未定义。</p>
-<p><strong>公式。</strong></p>
+<p>意义：DEG 子集上的 Pearson(Δpert)。</p>
+<p>计算过程：参考 μ_all；Mean 自身未定义。</p>
+<p>公式：</p>
 $$
 \mathrm{corr}\bigl((\hat y-\mu_{\mathrm{all}})_{\mathrm{DEG}},\,(y-\mu_{\mathrm{all}})_{\mathrm{DEG}}\bigr)
 $$
 
 <h3 id="metric-r2-dctrl-degs">R²(Δctrl DEGs)：DEG 上 R²(Δctrl)</h3>
-<p><strong>意义。</strong>DEG 子集上的 R²(Δctrl)，下限 −1。</p>
-<p><strong>计算过程。</strong>同一 DEG 掩码。</p>
-<p><strong>公式。</strong></p>
+<p>意义：DEG 子集上的 R²(Δctrl)，下限 −1。</p>
+<p>计算过程：同一 DEG 掩码。</p>
+<p>公式：</p>
 $$
 R^2\bigl((\hat y-\mu_c)_{\mathrm{DEG}},\,(y-\mu_c)_{\mathrm{DEG}}\bigr)\quad(\ge -1)
 $$
 
 <h3 id="metric-r2-dpert-degs">R²(Δpert DEGs)：DEG 上 R²(Δpert)</h3>
-<p><strong>意义。</strong>DEG 子集上的 R²(Δpert)，下限 −1。</p>
-<p><strong>计算过程。</strong>同一 DEG 掩码。</p>
-<p><strong>公式。</strong></p>
+<p>意义：DEG 子集上的 R²(Δpert)，下限 −1。</p>
+<p>计算过程：同一 DEG 掩码。</p>
+<p>公式：</p>
 $$
 R^2\bigl((\hat y-\mu_{\mathrm{all}})_{\mathrm{DEG}},\,(y-\mu_{\mathrm{all}})_{\mathrm{DEG}}\bigr)\quad(\ge -1)
 $$
