@@ -20,6 +20,15 @@
     };
   </script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<style>
+/* 本页专用：无精细鼠标时不展开 recon 卡片，点名称跳到文内释义锚点。
+   桌面仍用全局 CSS 的悬停浮层。不改 assets/style.css。 */
+.recon-card { display: none !important; }
+@media (hover: hover) and (pointer: fine) {
+  .recon-card { display: flex !important; }
+}
+</style>
 </head>
 <body>
   <nav class="topnav">
