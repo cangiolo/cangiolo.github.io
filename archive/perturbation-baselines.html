@@ -50,7 +50,7 @@
       </div>
     <nav class="article-toc side-toc" aria-label="文章目录">
 <a href="#sec-lead">结论</a>
-<a href="#sec-existing-metrics">现有指标</a>
+<a href="#sec-existing-metrics">现有指标及计算方案</a>
 <a href="#sec-hepg2">HepG2</a>
 <a href="#sec-k562">K562</a>
 <a href="#sec-jurkat">Jurkat</a>
@@ -72,15 +72,15 @@
 <h2 id="sec-lead">结论</h2>
 <p><strong>模型排序</strong>与 <a href="https://doi.org/10.1038/s41587-026-03307-w" target="_blank" rel="noopener">Miller et al.</a> 的 Figure / Extended Data 中一致。</p>
 <p><strong>评测任务与指标：</strong>本复现覆盖未见单基因扰动三个数据集：HepG2（Nadig25）、K562（Replogle22）、Jurkat（Nadig25）；共 18 个指标。</p>
-<h2 id="sec-existing-metrics">现有指标</h2>
+<h2 id="sec-existing-metrics">现有指标及计算方案</h2>
 <p><a href="https://doi.org/10.1038/s41587-026-03307-w" target="_blank" rel="noopener">Miller et al.</a> 用校准后的指标说明：深度模型在部分指标上可以打过无信息 baseline。以 Fig. 2b（K562，WMSE）为例，从矩阵到森林图的处理如下。</p>
 <ol>
-<li><strong>先变成扰动级向量（不是逐细胞比）。</strong>每个测试扰动把细胞对半：GT 半聚成真值伪批量 \(y\)，模型输出也是同维伪批量 \(\hat y\)（GEARS 等对抽样 control 取均值后再加扰动效应）。Mean 基线则是本折训练扰动伪批量的等权平均 \(\mu_{\mathrm{all}}\)。</li>
+<li><strong>预测矩阵合并为扰动级向量（每轮按扰动计算，不是逐细胞比）。</strong>每个测试扰动把细胞对半：GT 半聚成真值伪批量 \(y\)（GT），模型输出同维伪批量 \(\hat y\)（预测；GEARS 等对抽样 control 取均值后再加扰动效应）。Mean 基线则是本折训练扰动伪批量的等权平均 \(\mu_{\mathrm{all}}\)。</li>
 <li><strong>每个扰动算一次 WMSE。</strong>用 GT 半相对「其余非对照扰动」做 t-test（overestim_var），对 \(|t|\) min–max 后再平方得基因权重 \(w_g\)（权重只来自 GT，避免泄漏）。然后
 $$
 \mathrm{WMSE}_i=\frac{\sum_g w_g(\hat y_g-y_g)^2}{\sum_g w_g}.
 $$
-对 Mean 用同一套 \(y,w\)，把 \(\hat y\) 换成 \(\mu_{\mathrm{all}}\)，得到 \(\mathrm{WMSE}_i^{\mathrm{Mean}}\)。</li>
+其中 \(\hat y\) 为预测伪批量、\(y\) 为 GT 伪批量、\(g\) 为基因。对 Mean 用同一套 \(y,w\)，把 \(\hat y\) 换成 \(\mu_{\mathrm{all}}\)，得到 \(\mathrm{WMSE}_i^{\mathrm{Mean}}\)。</li>
 <li><strong>Fig. 2b 画的不是绝对 WMSE，而是差值。</strong>每个扰动：\(\Delta_i=\mathrm{WMSE}_i(\text{模型})-\mathrm{WMSE}_i(\text{Mean})\)。WMSE 越低越好，所以 \(\Delta&lt;0\)（点在 0 左侧）= 打过 Mean。图注 \(n=2045\) 就是这类成对差值的扰动数。</li>
 <li><strong>汇总成一行森林图。</strong>对所有 \(\Delta_i\) 取均值 \(\mu_\Delta\)；95% CI 用扰动级 bootstrap（文中 10,000 次）；再对「模型 vs Mean」做配对 t 检验（Bonferroni）。一点 + 横线 = 这一行的 \(\mu_\Delta\) 与 CI，不是五折先平均再画。</li>
 </ol>

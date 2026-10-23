@@ -9,17 +9,17 @@
 **评测任务与指标：**本复现覆盖未见单基因扰动三个数据集：HepG2（Nadig25）、K562（Replogle22）、Jurkat（Nadig25）；共 18 个指标。
 
 
-## 现有指标
+## 现有指标及计算方案
 
 [Miller et al.](https://doi.org/10.1038/s41587-026-03307-w) 用校准后的指标说明：深度模型在部分指标上可以打过无信息 baseline。以 Fig. 2b（K562，WMSE）为例，从矩阵到森林图的处理如下。
 
-- **先变成扰动级向量（不是逐细胞比）。**每个测试扰动把细胞对半：GT 半聚成真值伪批量 \(y\)，模型输出也是同维伪批量 \(\hat y\)（GEARS 等对抽样 control 取均值后再加扰动效应）。Mean 基线则是本折训练扰动伪批量的等权平均 \(\mu_{\mathrm{all}}\)。
+- **预测矩阵合并为扰动级向量（每轮按扰动计算，不是逐细胞比）。**每个测试扰动把细胞对半：GT 半聚成真值伪批量 \(y\)（GT），模型输出同维伪批量 \(\hat y\)（预测；GEARS 等对抽样 control 取均值后再加扰动效应）。Mean 基线则是本折训练扰动伪批量的等权平均 \(\mu_{\mathrm{all}}\)。
 
 - **每个扰动算一次 WMSE。**用 GT 半相对「其余非对照扰动」做 t-test（overestim_var），对 \(|t|\) min–max 后再平方得基因权重 \(w_g\)（权重只来自 GT，避免泄漏）。然后
 $$
 \mathrm{WMSE}_i=\frac{\sum_g w_g(\hat y_g-y_g)^2}{\sum_g w_g}.
 $$
-对 Mean 用同一套 \(y,w\)，把 \(\hat y\) 换成 \(\mu_{\mathrm{all}}\)，得到 \(\mathrm{WMSE}_i^{\mathrm{Mean}}\)。
+其中 \(\hat y\) 为预测伪批量、\(y\) 为 GT 伪批量、\(g\) 为基因。对 Mean 用同一套 \(y,w\)，把 \(\hat y\) 换成 \(\mu_{\mathrm{all}}\)，得到 \(\mathrm{WMSE}_i^{\mathrm{Mean}}\)。
 
 - **Fig. 2b 画的不是绝对 WMSE，而是差值。**每个扰动：\(\Delta_i=\mathrm{WMSE}_i(\text{模型})-\mathrm{WMSE}_i(\text{Mean})\)。WMSE 越低越好，所以 \(\Delta<0\)（点在 0 左侧）= 打过 Mean。图注 \(n=2045\) 就是这类成对差值的扰动数。
 
