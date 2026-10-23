@@ -50,6 +50,7 @@
       </div>
     <nav class="article-toc side-toc" aria-label="文章目录">
 <a href="#sec-lead">结论</a>
+<a href="#sec-existing-metrics">现有指标</a>
 <a href="#sec-hepg2">HepG2</a>
 <a href="#sec-k562">K562</a>
 <a href="#sec-jurkat">Jurkat</a>
@@ -89,6 +90,22 @@
 <blockquote>
 <p>早期 <code>COMPARE.zh.md</code> 写于 K562 GEARS 未完成时，以更新后的 <code>RANKING.zh.md</code>（2026-10-22）为准。</p>
 </blockquote>
+
+
+<h3 id="sec-existing-metrics">现有指标</h3>
+<p>Miller 文用校准后的指标说明：深度模型可以打过无信息 baseline。下面三张原图（已裁切页眉页脚与英文长图注）对应主文 Fig. 2 与 Extended Data Fig. 6–7；完整印刷数字仍以补充材料 Supplementary Table 2 为准。</p>
+<figure>
+<img src="../assets/img/perturbation-baselines/miller-fig2.png" alt="Miller Fig. 2：校准指标下的未见基因扰动与未见组合扰动 benchmarking" />
+<figcaption>图 1. Miller et al., <em>Nat Biotechnol</em>（2026），Figure 2。左：未见单基因 / 未见组合任务示意；右：相对 Mean 的森林图（K562 单基因与 Wessels 组合）。</figcaption>
+</figure>
+<figure>
+<img src="../assets/img/perturbation-baselines/miller-edfig6.png" alt="Miller Extended Data Fig. 6：K562 与 HepG2 未见单基因扰动的多指标森林图" />
+<figcaption>图 2. 同文 Extended Data Fig. 6。上排 Replogle22 K562（MSE / Pearson(Δctrl) / NIR）；下排 Nadig25 HepG2（WMSE / 加权 R²Δctrl / NIR / Pearson(Δpert)）。</figcaption>
+</figure>
+<figure>
+<img src="../assets/img/perturbation-baselines/miller-edfig7.png" alt="Miller Extended Data Fig. 7：K562 上 fMLP 各嵌入变体的森林图" />
+<figcaption>图 3. 同文 Extended Data Fig. 7。仅 Replogle22 K562 未见单基因任务；比较 fMLP 在 GenePT / ESM2 / scGPT / Geneformer 等嵌入与规模下的表现。</figcaption>
+</figure>
 
 <h2 id="sec-hepg2">HepG2（Nadig25）</h2>
 <p>作者预处理 109,183×8,746；2322 非对照扰动。<span class="recon"><a href="#model-gears">GEARS</a>
