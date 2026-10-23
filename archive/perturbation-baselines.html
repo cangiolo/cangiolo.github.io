@@ -76,7 +76,7 @@
 <p><a href="https://doi.org/10.1038/s41587-026-03307-w" target="_blank" rel="noopener">Miller et al.</a> 用校准后的指标说明：深度模型在部分指标上可以打过无信息 baseline。以 Fig. 2b（K562，WMSE）为例，从矩阵到森林图的处理如下。</p>
 <ol>
 <li><strong>预测矩阵合并为扰动级向量（每轮按扰动计算，不是逐细胞比）。</strong>每个测试扰动把细胞对半：GT 半聚成真值伪批量 \(y\)（GT），模型输出同维伪批量 \(\hat{y}\)（预测）。GEARS 等对抽样 control 取均值后再加扰动效应。Mean 基线则是本折训练扰动伪批量的等权平均 \(\mu_{\mathrm{all}}\)。</li>
-<li><strong>每个扰动算一次 WMSE。</strong>用 GT 半相对「其余非对照扰动」做 t-test（overestim_var），对 \(|t|\) min–max 后再平方得基因权重 \(w_g\)（权重只来自 GT，避免泄漏）。然后
+<li><strong>每个扰动算一次 WMSE。</strong>用 GT 半细胞相对「其余非对照扰动」细胞做 t-test（overestim_var），得到 \(t_g\)（\(|t_g|\) 反映该基因相对其他扰动的特异程度）；对 \(|t|\) min–max 后再平方得基因权重 \(w_g\)（权重只来自 GT，避免泄漏）。然后
 $$
 \mathrm{WMSE}_i=\frac{\sum_g w_g(\hat y_g-y_g)^2}{\sum_g w_g}.
 $$
