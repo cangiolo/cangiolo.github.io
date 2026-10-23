@@ -4,12 +4,12 @@
 
 ## 结论
 
-**核心强弱序在可检验范围内复现了 Miller 文印刷的官方 baseline 表：**在未见单基因扰动任务上，Pearson(Δctrl) 为 **Linear > Mean > GEARS > fMLP–Geneformer**；NIR 为 **fMLP ≳ GEARS > Linear ≈ Mean**。HepG2 与 K562（含 2026-10-22 的 GEARS 五折）四档齐全且成对顺序未翻转。Jurkat 无论文模型行，仅作同集内部对照。
+**模型排序**与 [Miller et al.](https://doi.org/10.1038/s41587-026-03307-w) 的 Figure / Extended Data 中官方 baseline 一致（完整对照见文内表与图）。
 
-表中数字一律取各 REPORT 的**拼接口径**（五折汇集后扰动等权 mean）。跨模型可评 n 不同，并排只看量级与定性序；唯一六模型同扰动可比的是 Jurkat Linear matched n=2108。鼠标悬停**指标名**看意义与计算入口，悬停**模型名**看本复现配置。
+**评测任务与指标。**本复现覆盖未见单基因扰动三项数据集：HepG2（Nadig25）、K562（Replogle22）、Jurkat（Nadig25）；每项报告 18 个指标。主文排序重点看 Pearson(Δctrl) 与 NIR（文中 Fig. 2 另有未见组合 Wessels23，本复现未跑）。
 
+**未见单基因上的序：**Pearson(Δctrl) 为 **Linear > Mean > GEARS > fMLP–Geneformer**；NIR 为 **fMLP ≳ GEARS > Linear ≈ Mean**。HepG2 与 K562 四档齐全且成对顺序未翻转；Jurkat 无论文模型行，仅作同集内部对照。
 
-> 早期 `COMPARE.zh.md` 写于 K562 GEARS 未完成时，以更新后的 `RANKING.zh.md`（2026-10-22）为准。
 
 ## 现有指标
 
