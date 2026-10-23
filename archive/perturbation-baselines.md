@@ -4,9 +4,9 @@
 
 ## 结论
 
-**模型排序**与 [Miller et al.](https://doi.org/10.1038/s41587-026-03307-w) 的 Figure / Extended Data 中官方 baseline 一致（完整对照见文内表与图）。
+**模型排序**与 [Miller et al.](https://doi.org/10.1038/s41587-026-03307-w) 的 Figure / Extended Data 中一致。
 
-**评测任务与指标。**本复现覆盖未见单基因扰动三项数据集：HepG2（Nadig25）、K562（Replogle22）、Jurkat（Nadig25）；每项报告 18 个指标。主文排序重点看 Pearson(Δctrl) 与 NIR（文中 Fig. 2 另有未见组合 Wessels23，本复现未跑）。
+**评测任务与指标：**本复现覆盖未见单基因扰动三个数据集：HepG2（Nadig25）、K562（Replogle22）、Jurkat（Nadig25）；共 18 个指标。
 
 **未见单基因上的序：**Pearson(Δctrl) 为 **Linear > Mean > GEARS > fMLP–Geneformer**；NIR 为 **fMLP ≳ GEARS > Linear ≈ Mean**。HepG2 与 K562 四档齐全且成对顺序未翻转；Jurkat 无论文模型行，仅作同集内部对照。
 
