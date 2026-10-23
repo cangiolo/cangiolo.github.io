@@ -72,22 +72,6 @@
 <h2 id="sec-lead">结论</h2>
 <p><strong>模型排序</strong>与 <a href="https://doi.org/10.1038/s41587-026-03307-w" target="_blank" rel="noopener">Miller et al.</a> 的 Figure / Extended Data 中一致。</p>
 <p><strong>评测任务与指标：</strong>本复现覆盖未见单基因扰动三个数据集：HepG2（Nadig25）、K562（Replogle22）、Jurkat（Nadig25）；共 18 个指标。</p>
-<p><strong>未见单基因上的序：</strong><span class="recon"><a href="#metric-pearson-dctrl">Pearson(Δctrl)</a>
-<a class="recon-card" href="#metric-pearson-dctrl">
-  <span class="recon-card-top"><span class="recon-card-name">Pearson(Δctrl)</span></span>
-  <span class="recon-card-bar" style="background:#3d6b8a"></span>
-  <span class="recon-card-title">相对对照的 Pearson 相关</span>
-  <span class="recon-card-desc">预测与真值相对对照基线的位移向量的相关系数；衡量方向与相对幅度。</span>
-  <span class="recon-card-foot">公式与计算过程 · Miller 2026</span>
-</a></span> 为 <strong>Linear &gt; Mean &gt; GEARS &gt; fMLP–Geneformer</strong>；<span class="recon"><a href="#metric-nir">NIR</a>
-<a class="recon-card" href="#metric-nir">
-  <span class="recon-card-top"><span class="recon-card-name">NIR</span></span>
-  <span class="recon-card-bar" style="background:#8a5a3d"></span>
-  <span class="recon-card-title">归一化逆秩（检索）</span>
-  <span class="recon-card-desc">预测是否在欧氏距离上最近于正确扰动真值；反映全局扰动景观结构。</span>
-  <span class="recon-card-foot">公式与计算过程 · Miller 2026</span>
-</a></span> 为 <strong>fMLP ≳ GEARS &gt; Linear ≈ Mean</strong>。HepG2 与 K562 四档齐全且成对顺序未翻转；Jurkat 无论文模型行，仅作同集内部对照。</p>
-
 <h2 id="sec-existing-metrics">现有指标</h2>
 <p><a href="https://doi.org/10.1038/s41587-026-03307-w" target="_blank" rel="noopener">Miller et al.</a> 用校准后的指标说明：深度模型在部分指标上可以打过无信息 baseline。以 Fig. 2b（K562，WMSE）为例，从矩阵到森林图的处理如下。</p>
 <ol>

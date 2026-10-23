@@ -8,8 +8,6 @@
 
 **评测任务与指标：**本复现覆盖未见单基因扰动三个数据集：HepG2（Nadig25）、K562（Replogle22）、Jurkat（Nadig25）；共 18 个指标。
 
-**未见单基因上的序：**Pearson(Δctrl) 为 **Linear > Mean > GEARS > fMLP–Geneformer**；NIR 为 **fMLP ≳ GEARS > Linear ≈ Mean**。HepG2 与 K562 四档齐全且成对顺序未翻转；Jurkat 无论文模型行，仅作同集内部对照。
-
 
 ## 现有指标
 
