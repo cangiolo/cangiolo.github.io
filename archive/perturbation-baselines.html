@@ -1092,7 +1092,7 @@ $$
 <p><strong>计算过程。</strong>对每个预测，算到所有候选 GT 的 L2 距离；正确匹配距离严格小于其余（排除自身）计成功；平局不计。拼接口径用全汇集候选。</p>
 <p><strong>公式。</strong></p>
 $$
-\mathrm{NIR}=\mathbb{P}\bigl[\,d_2(\hat y,y_i)<d_2(\hat y,y_j)\;\forall j\neq i\,\bigr]
+\mathrm{NIR}=\mathbb{P}\bigl[\,d_2(\hat y,y_i)\lt d_2(\hat y,y_j)\;\forall j\neq i\,\bigr]
 $$
 
 <h3 id="metric-pds">PDS：扰动判别分数</h3>
@@ -1100,7 +1100,7 @@ $$
 <p><strong>计算过程。</strong>严格小于、排除自身、平局不计；与 NIR 仅距离定义不同。</p>
 <p><strong>公式。</strong></p>
 $$
-\mathrm{PDS}=\mathbb{P}\bigl[\,d_1(\hat y,y_i)<d_1(\hat y,y_j)\;\forall j\neq i\,\bigr]
+\mathrm{PDS}=\mathbb{P}\bigl[\,d_1(\hat y,y_i)\ltd_1(\hat y,y_j)\;\forall j\neq i\,\bigr]
 $$
 
 <h3 id="metric-mse-degs">MSE(DEGs)：均方误差（DEGs）</h3>
