@@ -505,7 +505,27 @@ a:hover { color: var(--accent); text-decoration-color: var(--accent); }
 .prose h2.refs-title {
   border-bottom: 1.5px solid var(--ink);
 }
-.prose h3 { font-size: 1.22rem; }
+.prose h3 {
+  font-size: 1.22rem;
+  padding: 0 0 0.35rem;
+}
+.prose h3::before {
+  content: "";
+  display: inline-block;
+  width: 0.32em;
+  height: 0.32em;
+  margin: 0 0.38em 0.05em 0;
+  background: var(--amber);
+  vertical-align: middle;
+}
+.prose h3::after {
+  content: "";
+  display: block;
+  width: 2.4rem;
+  height: 1.5px;
+  margin-top: 0.38rem;
+  background: var(--ink);
+}
 .prose h4 { font-size: 1.05rem; }
 
 .prose ul, .prose ol { padding-left: 1.2rem; margin: 0 0 1.1em; }
