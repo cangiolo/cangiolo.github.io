@@ -30,7 +30,7 @@ $$
 <details id="k562-wmse-example">
 <summary>测评计算示例</summary>
 <p><strong>数据集：</strong>Replogle22 K562 的测试扰动 <code>ACTR3</code>，模型为 GEARS。</p>
-<p><strong>1．取出同一扰动的三个向量。</strong>\(y\) 是 GT，\(\hat y\) 是 GEARS 预测，\(\mu_{\mathrm{all}}\) 是本折训练扰动伪批量的等权平均。</p>
+<p><strong>1．预测矩阵合并为扰动级向量（本例：ACTR3）。</strong>按扰动聚合后，\(y\) 是 GT 真值伪批量，\(\hat y\) 是 GEARS 输出的同维预测伪批量，Mean 基线 \(\mu_{\mathrm{all}}\) 是本折训练扰动伪批量的等权平均。下表列出 ACTR3 对应向量中的基因值，而非逐细胞比较。</p>
 <table>
 <thead><tr><th scope="col">基因</th><th scope="col">\(y\)（GT）</th><th scope="col">\(\hat y\)（GEARS）</th><th scope="col">\(\mu_{\mathrm{all}}\)（Mean）</th></tr></thead>
 <tbody>
@@ -42,11 +42,11 @@ $$
 <tr><th scope="row">HNRNPL</th><td>0.53350878</td><td>0.50137216</td><td>0.53313081</td></tr>
 </tbody>
 </table>
-<p><strong>2．从 GT 权重算两次 WMSE。</strong>直接读取 GT 的 <code>scores_df_dict_gt</code>，不使用预测来定权。该扰动在全部 8,370 个基因上的 \(a=\min |t|=0.0000334845463\)，\(b=\max |t|=5.621879577637\)；保留这组全基因边界，不在六行内重新定标：</p>
+<p><strong>2．每个扰动算一次 WMSE（本例手算子集）。</strong>先用 GT 半细胞相对「其余非对照扰动」细胞做 t-test（overestim_var），再对统计量绝对值做 min–max 并平方，得到基因权重。本例直接读取 GT 的 <code>scores_df_dict_gt</code> 中的 t-test 结果，不使用预测来定权。该扰动在全部 8,370 个基因上的 \(a=\min |t|=0.0000334845463\)，\(b=\max |t|=5.621879577637\)；保留这组全基因边界，不在六行内重新定标：</p>
 $$
 u_g=\frac{|t_g|-a}{b-a},\qquad w_g=u_g^2.
 $$
-<p>例如 SASS6：\(u_g=(3.51611304-a)/(b-a)\approx0.62543149\)，\(w_g\approx0.39116454\)。下表最后两列就是分子中的逐基因项：\(A_g=w_g(\hat y_g-y_g)^2\)，\(B_g=w_g(\mu_{\mathrm{all},g}-y_g)^2\)。</p>
+<p>例如 SASS6：\(u_g=(3.51611304-a)/(b-a)\approx0.62543149\)，\(w_g\approx0.39116454\)。用这些权重计算 GEARS 的 WMSE；对 Mean 保持真值与权重不变，只把预测伪批量换成训练扰动等权平均。下表最后两列就是两者分子中的逐基因项：\(A_g=w_g(\hat y_g-y_g)^2\)，\(B_g=w_g(\mu_{\mathrm{all},g}-y_g)^2\)。</p>
 <table>
 <thead><tr><th scope="col">基因</th><th scope="col">\(|t_g|\)</th><th scope="col">\(u_g\)</th><th scope="col">\(w_g\)</th><th scope="col">\(A_g\)（GEARS）</th><th scope="col">\(B_g\)（Mean）</th></tr></thead>
 <tbody>
@@ -66,12 +66,12 @@ $$
 \end{aligned}
 $$
 <p>表内保留 8 位小数；求和、相减使用未舍入原值。这里分母也只加这 6 个基因，故是<strong>子集 WMSE</strong>，不是六项对正式全基因 WMSE 的贡献之和。</p>
-<p><strong>3．同权重、同真值，减去 Mean。</strong></p>
+<p><strong>3．差值 Δ，不是绝对 WMSE。</strong>用该扰动的 GEARS WMSE 减去 Mean WMSE，得到用于比较模型与基线的差值；本例子集的结果为：</p>
 $$
 \Delta_{i,S}=\mathrm{WMSE}_{i,S}^{\mathrm{GEARS}}-\mathrm{WMSE}_{i,S}^{\mathrm{Mean}}\approx+0.02367886.
 $$
 <p>正值表示 GEARS 在这 6 个基因上误差更大；负值才表示优于 Mean。作为口径核对，同一 ACTR3 的<strong>全基因</strong>落盘结果为 GEARS 0.01203250、Mean 0.00917999，\(\Delta_i\approx+0.00285251\)；已用该扰动的完整向量复算吻合，不能用上面的子集数替代。</p>
-<p><strong>4．从单扰动到森林图。</strong>正式评估对每个测试扰动用全基因算 \(\Delta_i\)，再取 \(\mu_\Delta=n^{-1}\sum_i\Delta_i\)，以扰动为单位有放回重采样得到均值的 95% bootstrap CI。下方论文 Fig. 2b 的 \(n=2045\) 是其全量成对差值数，并非本算例的样本数（本次 GEARS 复现五折可评 2029 个）。本块只演示 1 个扰动，不据此算 CI，也不重跑 10,000 次 bootstrap。</p>
+<p><strong>4．汇总成一行森林图（本例不跑全量）。</strong>正式评估汇总全部测试扰动的全基因 \(\Delta_i\)，取均值 \(\mu_\Delta=n^{-1}\sum_i\Delta_i\)，以扰动为单位有放回重采样得到均值的 95% bootstrap CI，再对「模型 vs Mean」做配对 t 检验（Bonferroni）。森林图的一点和横线分别表示均值与 CI，不是五折先平均再画。下方论文 Fig. 2b 的 \(n=2045\) 是其全量成对差值数，并非本算例的样本数（本次 GEARS 复现五折可评 2029 个）。本块只演示 1 个扰动，不据此算 CI 或做配对 t 检验，也不重跑 10,000 次 bootstrap。</p>
 <p><strong>数据追溯。</strong>以下路径均在 <code>gpu-zhouy1</code>，根目录为<br><code>~/Projects/gene_perturb_predict/runs/</code><br><code>miller-gears-k562-repro-20261021/</code>：</p>
 <ul>
 <li><code>author_formal/data/replogle22k562_processed.h5ad</code>：<code>uns/technical_duplicate_first_half_baseline</code> 的 <code>replogle22k562_ACTR3</code> 行；<code>uns/split_fold_0_mean_baseline</code> 的 <code>replogle22k562</code> 行；<code>uns/scores_df_dict_gt</code> 与 <code>uns/names_df_dict_gt</code> 的 <code>replogle22k562_ACTR3</code> 条目。</li>
