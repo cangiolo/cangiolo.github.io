@@ -241,7 +241,7 @@ fMLP–Geneformer all_embedded n=2283（缺嵌入 −63）。勿与上表 n=2108
 
 ### Tech.Dup
 
-**Technical duplicate（正对照）。**同扰动另一半细胞预测 GT 半；实验可及的上界。
+**Technical duplicate（正对照）。**同一扰动的细胞对半分：一半当真值，另一半当「预测」——这是实验能摸到的上限。
 
 ```
 半分裂                 first_half=GT · second_half=TD

@@ -188,7 +188,7 @@ $$
   <span class="recon-card-top"><span class="recon-card-name">Tech.Dup</span></span>
   <span class="recon-card-bar" style="background:#4a7a5a"></span>
   <span class="recon-card-title">Technical duplicate（正对照）</span>
-  <span class="recon-card-desc">同扰动另一半细胞预测 GT 半；实验可及的上界。 固定 first_half=GT、second_half=TD；TD 不参与 DEG 权重，避免泄漏。</span>
+  <span class="recon-card-desc">同一扰动的细胞对半分：一半当真值，另一半当「预测」——这是实验能摸到的上限。 固定 first_half=GT、second_half=TD；TD 不参与 DEG 权重，避免泄漏。</span>
   <span class="recon-card-foot">本复现配置</span>
 </a></span> 来自 GEARS 正式轮拼接；<span class="recon"><a href="#model-linear">Linear</a>
 <a class="recon-card" href="#model-linear">
@@ -255,7 +255,7 @@ $$
   <span class="recon-card-top"><span class="recon-card-name">Tech.Dup</span></span>
   <span class="recon-card-bar" style="background:#4a7a5a"></span>
   <span class="recon-card-title">Technical duplicate（正对照）</span>
-  <span class="recon-card-desc">同扰动另一半细胞预测 GT 半；实验可及的上界。 固定 first_half=GT、second_half=TD；TD 不参与 DEG 权重，避免泄漏。</span>
+  <span class="recon-card-desc">同一扰动的细胞对半分：一半当真值，另一半当「预测」——这是实验能摸到的上限。 固定 first_half=GT、second_half=TD；TD 不参与 DEG 权重，避免泄漏。</span>
   <span class="recon-card-foot">本复现配置</span>
 </a></span></th></tr></thead>
 <tbody>
@@ -670,7 +670,7 @@ $$
   <span class="recon-card-top"><span class="recon-card-name">Tech.Dup</span></span>
   <span class="recon-card-bar" style="background:#4a7a5a"></span>
   <span class="recon-card-title">Technical duplicate（正对照）</span>
-  <span class="recon-card-desc">同扰动另一半细胞预测 GT 半；实验可及的上界。 固定 first_half=GT、second_half=TD；TD 不参与 DEG 权重，避免泄漏。</span>
+  <span class="recon-card-desc">同一扰动的细胞对半分：一半当真值，另一半当「预测」——这是实验能摸到的上限。 固定 first_half=GT、second_half=TD；TD 不参与 DEG 权重，避免泄漏。</span>
   <span class="recon-card-foot">本复现配置</span>
 </a></span></th></tr></thead>
 <tbody>
@@ -1001,7 +1001,7 @@ $$
 注意                   Pearson(Δctrl) 对自身未定义（预测位移为零向量）</code></pre>
 
 <h3 id="model-techdup">Tech.Dup</h3>
-<p><strong>Technical duplicate（正对照）。</strong>同扰动另一半细胞预测 GT 半；实验可及的上界。</p>
+<p><strong>Technical duplicate（正对照）。</strong>同一扰动的细胞对半分：一半当真值，另一半当「预测」——这是实验能摸到的上限。</p>
 <pre><code>半分裂                 first_half=GT · second_half=TD
 DEG 权重               TD 不参与，避免泄漏</code></pre>
 
