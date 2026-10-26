@@ -932,44 +932,6 @@ $$
 
 <h2 id="sec-models">模型配置</h2>
 <p>表中模型名可悬停；完整配置如下。</p>
-<h3 id="model-gears">GEARS</h3>
-<p><strong>GEARS 0.1.2（原生）。</strong>每个数据集（HepG2 / K562 / Jurkat）独立五折训练与评分。</p>
-<pre><code>hidden                 64
-GO / Gene GNN          各 1 层
-decoder                16
-两图邻居               20
-coexpression 阈值      0.4
-epochs                 10
-batch                  32
-optimizer              Adam lr=0.001, weight_decay=0.0005
-scheduler              StepLR 每 epoch ×0.5
-loss                   原生四次方 + direction_lambda=0.1
-uncertainty            False
-checkpoint             val top20-DE MSE
-共表达图               仅本折 train 细胞
-predict                对 300 个抽样 control 取均值</code></pre>
-
-<h3 id="model-linear">Linear</h3>
-<p><strong>Ahlmann-Eltze Linear。</strong>伪批量 PCA（10 维）加岭回归 Y≈G W P。</p>
-<pre><code>PCA                    n_components=10, random_state=42
-ridge                  G_ridge=P_ridge=0.1
-靶基因                 仅表达矩阵中出现的靶；缺行不补零
-对齐                   HepG2/K562 非 DEG 12 项对齐印刷表三位小数</code></pre>
-
-<h3 id="model-fmlp">fMLP–Geneformer</h3>
-<p><strong>fMLP + Geneformer-V2-104M。</strong>冻结 Geneformer 词嵌入，其上训练 MLP probe；非动态 cell embedding。</p>
-<pre><code>嵌入                   Geneformer-V2-104M word_embeddings
-查表                   作者 h5ad 内 20,271×768 静态；不微调 Transformer
-网络                   768→512→512→128(latent)→512→512→全部输出基因
-激活                   LeakyReLU(0.2)
-loss                   绝对表达 MSE
-optimizer              Adam lr=0.001
-batch                  256
-scheduler              StepLR 每 30 epochs ×0.2
-seed                   42
-epochs                 100
-缺嵌入剔除             HepG2 −62 · K562 −58 · Jurkat −63</code></pre>
-
 <h3 id="model-mean">Mean</h3>
 <p><strong>Dataset Mean（负对照）。</strong>训练扰动伪批量的等权平均；Miller 用作负对照。</p>
 <pre><code>定义                   本折训练非对照扰动的 pseudobulk 等权平均
@@ -992,6 +954,44 @@ DEG 权重               TD 不参与，避免泄漏</code></pre>
 α                      1 − P_DEG（仅用 TD 半独立 DEG）
 弱扰动                 贴近 Mean
 强扰动                 贴近 Tech.Dup</code></pre>
+
+<h3 id="model-linear">Linear</h3>
+<p><strong>Ahlmann-Eltze Linear。</strong>伪批量 PCA（10 维）加岭回归 Y≈G W P。</p>
+<pre><code>PCA                    n_components=10, random_state=42
+ridge                  G_ridge=P_ridge=0.1
+靶基因                 仅表达矩阵中出现的靶；缺行不补零
+对齐                   HepG2/K562 非 DEG 12 项对齐印刷表三位小数</code></pre>
+
+<h3 id="model-gears">GEARS</h3>
+<p><strong>GEARS 0.1.2（原生）。</strong>每个数据集（HepG2 / K562 / Jurkat）独立五折训练与评分。</p>
+<pre><code>hidden                 64
+GO / Gene GNN          各 1 层
+decoder                16
+两图邻居               20
+coexpression 阈值      0.4
+epochs                 10
+batch                  32
+optimizer              Adam lr=0.001, weight_decay=0.0005
+scheduler              StepLR 每 epoch ×0.5
+loss                   原生四次方 + direction_lambda=0.1
+uncertainty            False
+checkpoint             val top20-DE MSE
+共表达图               仅本折 train 细胞
+predict                对 300 个抽样 control 取均值</code></pre>
+
+<h3 id="model-fmlp">fMLP–Geneformer</h3>
+<p><strong>fMLP + Geneformer-V2-104M。</strong>冻结 Geneformer 词嵌入，其上训练 MLP probe；非动态 cell embedding。</p>
+<pre><code>嵌入                   Geneformer-V2-104M word_embeddings
+查表                   作者 h5ad 内 20,271×768 静态；不微调 Transformer
+网络                   768→512→512→128(latent)→512→512→全部输出基因
+激活                   LeakyReLU(0.2)
+loss                   绝对表达 MSE
+optimizer              Adam lr=0.001
+batch                  256
+scheduler              StepLR 每 30 epochs ×0.2
+seed                   42
+epochs                 100
+缺嵌入剔除             HepG2 −62 · K562 −58 · Jurkat −63</code></pre>
 
 <p><strong>数据集对应训练：</strong>GEARS / fMLP / Linear 均在 HepG2、K562、Jurkat 上分别拟合五折；Mean / Control / Tech.Dup / Inter.Dup 为每折派生基线，不是可学习模型。</p>
 

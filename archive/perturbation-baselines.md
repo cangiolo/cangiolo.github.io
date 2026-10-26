@@ -69,7 +69,7 @@ $$
 | R²(Δctrl DEGs)      | −0.254   | −0.303   | −0.405   | −0.361          | −0.074    | −0.389   | −0.095   |
 | R²(Δpert DEGs)      | −0.391   | −0.426   | −0.419   | −0.386          | −0.167    | −0.430   | −0.061   |
 
-\**相对 Mean：**GEARS 的 MSE +5.5%、WMSE −5.8%（16 项中胜 7）。相对 Miller 文印刷点：GEARS Pearson(Δctrl) −0.012、NIR −0.011。
+**相对 Mean：**GEARS 的 MSE +5.5%、WMSE −5.8%（16 项中胜 7）。相对 Miller 文印刷点：GEARS Pearson(Δctrl) −0.012、NIR −0.011。
 
 ## K562（Replogle22）
 
@@ -100,7 +100,7 @@ GEARS 五折完成后四档齐全；排序与 Miller 文印刷表一致。 可�
 | R²(Δctrl DEGs)      | −0.201   | −0.260   | −0.378   | −0.263          | −0.286   |
 | R²(Δpert DEGs)      | −0.256   | −0.307   | −0.381   | −0.268          | −0.309   |
 
-\**排序：**Pearson Linear > Mean > GEARS > fMLP；NIR fMLP > GEARS ≈ Linear > Mean。MSE(DEGs) 上 Linear/Mean 差约 0.0002 互换，不算结构性翻车。
+**排序：**Pearson Linear > Mean > GEARS > fMLP；NIR fMLP > GEARS ≈ Linear > Mean。MSE(DEGs) 上 Linear/Mean 差约 0.0002 互换，不算结构性翻车。
 
 ## Jurkat（Nadig25）
 
@@ -156,15 +156,66 @@ fMLP–Geneformer all_embedded n=2283（缺嵌入 −63）。勿与上表 n=2108
 | R²(Δctrl DEGs)      | −0.344          |
 | R²(Δpert DEGs)      | −0.357          |
 
-\**内部序（matched）：**Pearson Inter.Dup > Tech.Dup > Linear > Mean > GEARS；NIR Tech.Dup ≫ Inter.Dup > GEARS ≳ Linear ≈ Mean。
+**内部序（matched）：**Pearson Inter.Dup > Tech.Dup > Linear > Mean > GEARS；NIR Tech.Dup ≫ Inter.Dup > GEARS ≳ Linear ≈ Mean。
 
 ## 模型配置
 
 表中模型名可悬停；完整配置如下。
 
+### Mean
+
+**Dataset Mean（负对照）。**训练扰动伪批量的等权平均；Miller 用作负对照。
+
+```
+定义                   本折训练非对照扰动的 pseudobulk 等权平均
+加权                   不按细胞数加权
+注意                   Pearson(Δpert) 对自身未定义
+```
+
+### Control
+
+**Control Mean（负对照）。**对照细胞均值基线。
+
+```
+定义                   作者 ctrl_baseline
+注意                   Pearson(Δctrl) 对自身未定义（预测位移为零向量）
+```
+
+### Tech.Dup
+
+**Technical duplicate（正对照）。**同扰动另一半细胞预测 GT 半；实验可及的上界。
+
+```
+半分裂                 first_half=GT · second_half=TD
+DEG 权重               TD 不参与，避免泄漏
+```
+
+### Inter.Dup
+
+**Interpolated duplicate（正对照）。**TD 与 Mean 按 DEG 显著性逐基因插值；用于指标校准。
+
+```
+公式                   μ_ID = α ⊙ μ_TD + (1−α) ⊙ μ_all
+α                      1 − P_DEG（仅用 TD 半独立 DEG）
+弱扰动                 贴近 Mean
+强扰动                 贴近 Tech.Dup
+```
+
+**数据集对应训练：**GEARS / fMLP / Linear 均在 HepG2、K562、Jurkat 上分别拟合五折；Mean / Control / Tech.Dup / Inter.Dup 为每折派生基线，不是可学习模型。
+### Linear
+
+**Ahlmann-Eltze Linear。**伪批量 PCA（10 维）加岭回归 Y≈G W P。
+
+```
+PCA                    n_components=10, random_state=42
+ridge                  G_ridge=P_ridge=0.1
+靶基因                 仅表达矩阵中出现的靶；缺行不补零
+对齐                   HepG2/K562 非 DEG 12 项对齐印刷表三位小数
+```
+
 ### GEARS
 
-\**GEARS 0.1.2（原生）。**每个数据集（HepG2 / K562 / Jurkat）独立五折训练与评分。
+**GEARS 0.1.2（原生）。**每个数据集（HepG2 / K562 / Jurkat）独立五折训练与评分。
 
 ```
 hidden                 64
@@ -183,20 +234,9 @@ checkpoint             val top20-DE MSE
 predict                对 300 个抽样 control 取均值
 ```
 
-### Linear
-
-\*\*Ahlmann-Eltze Linear。\*\*伪批量 PCA（10 维）加岭回归 Y≈G W P。
-
-```
-PCA                    n_components=10, random_state=42
-ridge                  G_ridge=P_ridge=0.1
-靶基因                 仅表达矩阵中出现的靶；缺行不补零
-对齐                   HepG2/K562 非 DEG 12 项对齐印刷表三位小数
-```
-
 ### fMLP–Geneformer
 
-\*\*fMLP + Geneformer-V2-104M。\*\*冻结 Geneformer 词嵌入，其上训练 MLP probe；非动态 cell embedding。
+**fMLP + Geneformer-V2-104M。**冻结 Geneformer 词嵌入，其上训练 MLP probe；非动态 cell embedding。
 
 ```
 嵌入                   Geneformer-V2-104M word_embeddings
@@ -212,46 +252,6 @@ epochs                 100
 缺嵌入剔除             HepG2 −62 · K562 −58 · Jurkat −63
 ```
 
-### Mean
-
-\*\*Dataset Mean（负对照）。\*\*训练扰动伪批量的等权平均；Miller 用作负对照。
-
-```
-定义                   本折训练非对照扰动的 pseudobulk 等权平均
-加权                   不按细胞数加权
-注意                   Pearson(Δpert) 对自身未定义
-```
-
-### Control
-
-\*\*Control Mean（负对照）。\*\*对照细胞均值基线。
-
-```
-定义                   作者 ctrl_baseline
-注意                   Pearson(Δctrl) 对自身未定义（预测位移为零向量）
-```
-
-### Tech.Dup
-
-\*\*Technical duplicate（正对照）。\*\*同扰动另一半细胞预测 GT 半；实验可及的上界。
-
-```
-半分裂                 first_half=GT · second_half=TD
-DEG 权重               TD 不参与，避免泄漏
-```
-
-### Inter.Dup
-
-\*\*Interpolated duplicate（正对照）。\*\*TD 与 Mean 按 DEG 显著性逐基因插值；用于指标校准。
-
-```
-公式                   μ_ID = α ⊙ μ_TD + (1−α) ⊙ μ_all
-α                      1 − P_DEG（仅用 TD 半独立 DEG）
-弱扰动                 贴近 Mean
-强扰动                 贴近 Tech.Dup
-```
-
-\*\*数据集对应训练：\*\*GEARS / fMLP / Linear 均在 HepG2、K562、Jurkat 上分别拟合五折；Mean / Control / Tech.Dup / Inter.Dup 为每折派生基线，不是可学习模型。
 
 ## 指标释义（18 项）
 
@@ -475,13 +475,13 @@ $$
 
 ## 口径与注意
 
-- \*\*n 不同：\*\*Linear 只评表达靶；fMLP 剔除无 Geneformer 嵌入的扰动；GEARS 受 GO 覆盖限制。定性序复现 ≠ 同扰动公平赛马。
+- **n 不同：**Linear 只评表达靶；fMLP 剔除无 Geneformer 嵌入的扰动；GEARS 受 GO 覆盖限制。定性序复现 ≠ 同扰动公平赛马。
 
-- \*\*DEG 绝对分：\*\*Linear/fMLP 的 DEG 六项与 Miller 文印刷值不对齐；全基因非 DEG 已对齐。相对序仍可参考，勿跨文献比绝对数。
+- **DEG 绝对分：**Linear/fMLP 的 DEG 六项与 Miller 文印刷值不对齐；全基因非 DEG 已对齐。相对序仍可参考，勿跨文献比绝对数。
 
-- \*\*HepG2 GEARS fold0：\*\*首次 predict 时同卡 vLLM OOM；checkpoint 已恢复，`train_seconds` 为空，10 epoch 日志确认完成。
+- **HepG2 GEARS fold0：**首次 predict 时同卡 vLLM OOM；checkpoint 已恢复，`train_seconds` 为空，10 epoch 日志确认完成。
 
-- \*\*尚未做：\*\*跨模型同扰动交集重评；旧 COMPARE 文档未重写。
+- **尚未做：**跨模型同扰动交集重评；旧 COMPARE 文档未重写。
 
 ## 参考
 
