@@ -42,11 +42,16 @@ $$
 <tr><th scope="row">HNRNPL</th><td>0.53350878</td><td>0.50137216</td><td>0.53313081</td></tr>
 </tbody>
 </table>
-<p><strong>2．每个扰动算一次 WMSE（本例手算子集）。</strong>先用 GT 半细胞相对「其余非对照扰动」细胞做 t-test（overestim_var），再对统计量绝对值做 min–max 并平方，得到基因权重。本例直接读取 GT 的 <code>scores_df_dict_gt</code> 中的 t-test 结果，不使用预测来定权。该扰动在全部 8,370 个基因上的 \(a=\min |t|=0.0000334845463\)，\(b=\max |t|=5.621879577637\)；保留这组全基因边界，不在六行内重新定标：</p>
+<p><strong>2．每个扰动算一次 WMSE（本例手算子集）。</strong></p>
+<p><strong>先在 GT 细胞上做 t-test。</strong>这里的「GT 半」就是前述细胞对半分裂后、用于聚合真值伪批量 \(y\) 的那一半。检验用的是这些细胞的逐基因表达，不是聚合后的单个均值。对 ACTR3 的 GT 半细胞，参照组是 GT 中其余非对照扰动的细胞，不是未扰动的 control。采用 Scanpy 风格的 <code>t-test_overestim_var</code>，即「方差高估」的 t 检验变体，以更保守的方差估计衡量差异。</p>
+<p>每个基因得到统计量 \(t_g\)；\(|t_g|\) 越大，表示该基因相对其他扰动的差异越突出，反映的是扰动特异程度，不区分上调或下调。本例读取 <code>scores_df_dict_gt</code>，只是复用按上述口径算好的 GT 统计量，不是另一定义。定权不使用模型预测，避免预测信息进入评分权重；换模型或换成 Mean，都不重新定权。</p>
+<p><strong>再用全基因范围定标。</strong>该扰动在全部 8,370 个基因上的 \(a=\min |t|=0.0000334845463\)，\(b=\max |t|=5.621879577637\)。先减去下界，再除以全基因极差，得到归一化值。本例只截取六行手算，仍保留这组全基因边界；若在六行内重新取极值，权重就会随展示子集改变，不再是原评估的权重：</p>
 $$
 u_g=\frac{|t_g|-a}{b-a},\qquad w_g=u_g^2.
 $$
-<p>例如 SASS6：\(u_g=(3.51611304-a)/(b-a)\approx0.62543149\)，\(w_g\approx0.39116454\)。用这些权重计算 GEARS 的 WMSE；对 Mean 保持真值与权重不变，只把预测伪批量换成训练扰动等权平均。下表最后两列就是两者分子中的逐基因项：\(A_g=w_g(\hat y_g-y_g)^2\)，\(B_g=w_g(\mu_{\mathrm{all},g}-y_g)^2\)。</p>
+<p>归一化值越大，平方后的权重越大。平方会进一步压低较小归一化值的相对权重，更强调强效应、即这里 \(|t_g|\) 较大的基因，并非放大所有基因的权重。</p>
+<p>例如 SASS6：\(u_g=(3.51611304-a)/(b-a)\approx0.62543149\)，\(w_g\approx0.39116454\)。</p>
+<p><strong>最后计算加权误差。</strong>GEARS 与 Mean 共用同一套真值 \(y\) 和权重 \(w_g\)。先将 GEARS 的逐基因预测误差平方后乘以权重，再求和并除以权重之和；对 Mean 只把预测伪批量 \(\hat y\) 换成训练扰动等权平均 \(\mu_{\mathrm{all}}\)。下表最后两列就是两者分子中的逐基因项：\(A_g=w_g(\hat y_g-y_g)^2\)，\(B_g=w_g(\mu_{\mathrm{all},g}-y_g)^2\)。</p>
 <table>
 <thead><tr><th scope="col">基因</th><th scope="col">\(|t_g|\)</th><th scope="col">\(u_g\)</th><th scope="col">\(w_g\)</th><th scope="col">\(A_g\)（GEARS）</th><th scope="col">\(B_g\)（Mean）</th></tr></thead>
 <tbody>
