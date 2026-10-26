@@ -238,8 +238,10 @@ predict                对 300 个抽样 control 取均值
 
 **fMLP + Geneformer-V2-104M。**冻结 Geneformer 词嵌入，其上训练 MLP probe；非动态 cell embedding。
 
+**出处：**原作者 Christina Theodoris 实验室在 Hugging Face 发布的官方权重（[ctheodoris/Geneformer](https://huggingface.co/ctheodoris/Geneformer)，子目录 `Geneformer-V2-104M`），不是社区第三方重训。约 2024 年 12 月在 [Genecorpus-104M](https://huggingface.co/datasets/theodoris-lab/Genecorpus-104M) 上预训练：约 1.04 亿（103,877,737）人类单细胞转录组，来自 2903 个公开数据集（GEO / SRA / CELLxGENE / HCA 等），不含高突变负荷细胞（恶性细胞、永生化细胞系）；词表约 20,271 个蛋白编码基因。论文见 Chen & Venkatesh et al., *Nature Computational Science* 2026。本复现只用作者写入 h5ad 的静态 `word_embeddings`（20,271×768）查表，不跑、不微调 Transformer。
+
 ```
-嵌入                   Geneformer-V2-104M word_embeddings
+嵌入                   Geneformer-V2-104M word_embeddings（HF 官方）
 查表                   作者 h5ad 内 20,271×768 静态；不微调 Transformer
 网络                   768→512→512→128(latent)→512→512→全部输出基因
 激活                   LeakyReLU(0.2)
@@ -489,6 +491,6 @@ $$
 
 \[2]. Ahlmann-Eltze et al., *Nat Methods* 2025（Linear baseline）。
 
-\[3]. Theodoris et al., Geneformer（本复现用 V2-104M 静态词嵌入）。
+\[3]. Theodoris et al., Geneformer；本复现用 V2-104M 静态词嵌入。权重：[ctheodoris/Geneformer](https://huggingface.co/ctheodoris/Geneformer)（`Geneformer-V2-104M`）；语料：[Genecorpus-104M](https://huggingface.co/datasets/theodoris-lab/Genecorpus-104M)；论文：Chen & Venkatesh et al., *Nat Comput Sci* 2026。
 
 \[4]. 本复现 REPORT：HepG2/K562/Jurkat GEARS、Linear、fMLP–Geneformer；`RANKING.zh.md`（2026-10-22）。
