@@ -478,7 +478,7 @@ $$
   <span class="recon-card-title">fMLP + Geneformer-V2-104M</span>
   <span class="recon-card-desc">冻结 Geneformer 词嵌入，其上训练 MLP probe。 Geneformer-V2-104M：静态 word_embeddings（20,271×768）查表，无训练；HF 官方权重；Genecorpus-104M；8–24×H100 FP32，3 epochs。网络：768→512→512→128（late…</span>
   <span class="recon-card-foot">本复现配置</span>
-</a></span> n=1986（all_embedded，剔除缺嵌入 58）。简报未单列 Tech/Inter 拼接行，故下表不含这两列。</p>
+</a></span> n=1986（all_embedded，剔除缺嵌入 58）。Inter.Dup 和 Tech.Dup 两列使用作者数据原本覆盖的 2029 个扰动、8370 个基因（native 口径）；与表中其他模型一样，按各自覆盖的扰动汇总，并不是统一到 1802 个扰动的队列。</p>
 <h3 id="k562-table">拼接 mean（全 18 项）</h3>
 <p>数字为扰动等权的五折 pooled mean，旧列数字及覆盖不变：Linear n≈1855 · Mean n≈2029 · GEARS n≈2029 · fMLP–Geneformer n≈1986 · Control n≈2029；原生基因轴为 8370。新增原生覆盖：scGPT n=1825、8369 基因；fMLP–scGPT n=2001、fMLP–GenePT n=1979、fMLP–ESM2 n=1984、PRESAGE n=1855，后四者均为 8370 基因。各列不能直接用于同扰动配对比较。</p>
 <div class="table-scroll" role="region" aria-label="拼接 mean（全 18 项）" tabindex="0"><table>
@@ -545,12 +545,26 @@ $$
   <span class="recon-card-title">40 个固定先验的 PRESAGE</span>
   <span class="recon-card-desc">40 个固定先验，PCA128，GAT 加权与 sum pooling；max1000，batch32，验证早停 patience10，末轮 checkpoint。</span>
   <span class="recon-card-foot">本复现配置</span>
+</a></span></th><th><span class="recon"><a href="#model-interdup">Inter.Dup</a>
+<a class="recon-card" href="#model-interdup">
+  <span class="recon-card-top"><span class="recon-card-name">Inter.Dup</span></span>
+  <span class="recon-card-bar" style="background:#7a5a3d"></span>
+  <span class="recon-card-title">Interpolated duplicate（正对照）</span>
+  <span class="recon-card-desc">TD 与 Mean 按 DEG 显著性逐基因插值；用于指标校准。 μ_ID = α ⊙ μ_TD + (1−α) ⊙ μ_all，α = 1 − P_DEG（仅用 TD 半独立 DEG）。弱扰动贴近 Mean，强扰动贴近 Tech.Dup。</span>
+  <span class="recon-card-foot">本复现配置</span>
 </a></span></th><th><span class="recon"><a href="#model-control">Control</a>
 <a class="recon-card" href="#model-control">
   <span class="recon-card-top"><span class="recon-card-name">Control</span></span>
   <span class="recon-card-bar" style="background:#8a8a8a"></span>
   <span class="recon-card-title">Control Mean（负对照）</span>
   <span class="recon-card-desc">对照细胞均值基线。 作者 ctrl_baseline。Pearson(Δctrl) 对自身未定义（预测位移为零向量）。</span>
+  <span class="recon-card-foot">本复现配置</span>
+</a></span></th><th><span class="recon"><a href="#model-techdup">Tech.Dup</a>
+<a class="recon-card" href="#model-techdup">
+  <span class="recon-card-top"><span class="recon-card-name">Tech.Dup</span></span>
+  <span class="recon-card-bar" style="background:#4a7a5a"></span>
+  <span class="recon-card-title">Technical duplicate（正对照）</span>
+  <span class="recon-card-desc">同一扰动的细胞对半分：一半当真值，另一半当「预测」——这是实验能摸到的上限。 固定 first_half=GT、second_half=TD；TD 不参与 DEG 权重，避免泄漏。</span>
   <span class="recon-card-foot">本复现配置</span>
 </a></span></th></tr></thead>
 <tbody>
@@ -561,7 +575,7 @@ $$
   <span class="recon-card-title">均方误差</span>
   <span class="recon-card-desc">预测与真值在全部基因上的均方误差，越低越好。</span>
   <span class="recon-card-foot">公式与计算过程 · Miller 2026</span>
-</a></span></td><td>0.004814</td><td>0.004835</td><td>0.005944</td><td>0.005040</td><td>0.005056</td><td>0.005648</td><td>0.004635</td><td>0.004669</td><td>0.004304</td><td>0.005099</td></tr>
+</a></span></td><td>0.004814</td><td>0.004835</td><td>0.005944</td><td>0.005040</td><td>0.005056</td><td>0.005648</td><td>0.004635</td><td>0.004669</td><td>0.004304</td><td>0.004057</td><td>0.005099</td><td>0.005832</td></tr>
 <tr><td><span class="recon"><a href="#metric-wmse">WMSE</a>
 <a class="recon-card" href="#metric-wmse">
   <span class="recon-card-top"><span class="recon-card-name">WMSE</span></span>
@@ -569,7 +583,7 @@ $$
   <span class="recon-card-title">加权均方误差</span>
   <span class="recon-card-desc">按扰动效应强弱给基因加权的 MSE，强调强扰动基因上的误差。</span>
   <span class="recon-card-foot">公式与计算过程 · Miller 2026</span>
-</a></span></td><td>0.034434</td><td>0.033802</td><td>0.033510</td><td>0.032008</td><td>0.026330</td><td>0.032358</td><td>0.029083</td><td>0.030004</td><td>0.028269</td><td>0.034976</td></tr>
+</a></span></td><td>0.034434</td><td>0.033802</td><td>0.033510</td><td>0.032008</td><td>0.026330</td><td>0.032358</td><td>0.029083</td><td>0.030004</td><td>0.028269</td><td>0.013495</td><td>0.034976</td><td>0.010768</td></tr>
 <tr><td><span class="recon"><a href="#metric-mae">MAE</a>
 <a class="recon-card" href="#metric-mae">
   <span class="recon-card-top"><span class="recon-card-name">MAE</span></span>
@@ -577,7 +591,7 @@ $$
   <span class="recon-card-title">平均绝对误差</span>
   <span class="recon-card-desc">全基因绝对误差均值；Miller 认为整体校准弱于 MSE。</span>
   <span class="recon-card-foot">公式与计算过程 · Miller 2026</span>
-</a></span></td><td>0.047700</td><td>0.047659</td><td>0.054299</td><td>0.048975</td><td>0.049045</td><td>0.049079</td><td>0.047226</td><td>0.047410</td><td>0.046274</td><td>0.048241</td></tr>
+</a></span></td><td>0.047700</td><td>0.047659</td><td>0.054299</td><td>0.048975</td><td>0.049045</td><td>0.049079</td><td>0.047226</td><td>0.047410</td><td>0.046274</td><td>0.045397</td><td>0.048241</td><td>0.055533</td></tr>
 <tr><td><span class="recon"><a href="#metric-wmae">WMAE</a>
 <a class="recon-card" href="#metric-wmae">
   <span class="recon-card-top"><span class="recon-card-name">WMAE</span></span>
@@ -585,7 +599,7 @@ $$
   <span class="recon-card-title">加权平均绝对误差</span>
   <span class="recon-card-desc">与 WMSE 同权重的加权 MAE。</span>
   <span class="recon-card-foot">公式与计算过程 · Miller 2026</span>
-</a></span></td><td>0.118511</td><td>0.118101</td><td>0.118731</td><td>0.111511</td><td>0.112159</td><td>0.111944</td><td>0.104720</td><td>0.107914</td><td>0.103853</td><td>0.117038</td></tr>
+</a></span></td><td>0.118511</td><td>0.118101</td><td>0.118731</td><td>0.111511</td><td>0.112159</td><td>0.111944</td><td>0.104720</td><td>0.107914</td><td>0.103853</td><td>0.093317</td><td>0.117038</td><td>0.078407</td></tr>
 <tr><td><span class="recon"><a href="#metric-pearson-dctrl">Pearson(Δctrl)</a>
 <a class="recon-card" href="#metric-pearson-dctrl">
   <span class="recon-card-top"><span class="recon-card-name">Pearson(Δctrl)</span></span>
@@ -593,7 +607,7 @@ $$
   <span class="recon-card-title">相对对照的 Pearson 相关</span>
   <span class="recon-card-desc">预测与真值相对对照基线的位移向量的相关系数；衡量方向与相对幅度。</span>
   <span class="recon-card-foot">公式与计算过程 · Miller 2026</span>
-</a></span></td><td>0.242</td><td>0.207</td><td>0.153</td><td>0.143</td><td>0.197</td><td>0.172</td><td>0.200</td><td>0.214</td><td>0.303</td><td>未定义</td></tr>
+</a></span></td><td>0.242</td><td>0.207</td><td>0.153</td><td>0.143</td><td>0.197</td><td>0.172</td><td>0.200</td><td>0.214</td><td>0.303</td><td>0.292</td><td>未定义</td><td>0.307</td></tr>
 <tr><td><span class="recon"><a href="#metric-pearson-dpert">Pearson(Δpert)</a>
 <a class="recon-card" href="#metric-pearson-dpert">
   <span class="recon-card-top"><span class="recon-card-name">Pearson(Δpert)</span></span>
@@ -601,7 +615,7 @@ $$
   <span class="recon-card-title">相对训练均值的 Pearson 相关</span>
   <span class="recon-card-desc">相对本折训练扰动均值 μ_all 的位移相关；用于减弱对照偏置。</span>
   <span class="recon-card-foot">公式与计算过程 · Miller 2026</span>
-</a></span></td><td>0.079</td><td>未定义</td><td>0.019</td><td>0.115</td><td>0.083</td><td>0.117</td><td>0.211</td><td>0.172</td><td>0.260</td><td>0.060</td></tr>
+</a></span></td><td>0.079</td><td>未定义</td><td>0.019</td><td>0.115</td><td>0.083</td><td>0.117</td><td>0.211</td><td>0.172</td><td>0.260</td><td>0.250</td><td>0.060</td><td>0.311</td></tr>
 <tr><td><span class="recon"><a href="#metric-r2-dctrl">R²(Δctrl)</a>
 <a class="recon-card" href="#metric-r2-dctrl">
   <span class="recon-card-top"><span class="recon-card-name">R²(Δctrl)</span></span>
@@ -609,7 +623,7 @@ $$
   <span class="recon-card-title">相对对照的决定系数</span>
   <span class="recon-card-desc">Δctrl 空间上的拟合优度；惩罚尺度偏差。</span>
   <span class="recon-card-foot">公式与计算过程 · Miller 2026</span>
-</a></span></td><td>0.009</td><td>−0.008</td><td>−0.323</td><td>−0.093</td><td>−0.068</td><td>−0.092</td><td>−0.022</td><td>−0.029</td><td>0.049</td><td>−0.020</td></tr>
+</a></span></td><td>0.009</td><td>−0.008</td><td>−0.323</td><td>−0.093</td><td>−0.068</td><td>−0.092</td><td>−0.022</td><td>−0.029</td><td>0.049</td><td>0.084</td><td>−0.020</td><td>−0.392</td></tr>
 <tr><td><span class="recon"><a href="#metric-r2-dpert">R²(Δpert)</a>
 <a class="recon-card" href="#metric-r2-dpert">
   <span class="recon-card-top"><span class="recon-card-name">R²(Δpert)</span></span>
@@ -617,7 +631,7 @@ $$
   <span class="recon-card-title">相对训练均值的决定系数</span>
   <span class="recon-card-desc">Δpert 空间上的 R²。</span>
   <span class="recon-card-foot">公式与计算过程 · Miller 2026</span>
-</a></span></td><td>−0.009</td><td>−0.021</td><td>−0.348</td><td>−0.108</td><td>−0.086</td><td>−0.103</td><td>−0.034</td><td>−0.040</td><td>0.038</td><td>−0.046</td></tr>
+</a></span></td><td>−0.009</td><td>−0.021</td><td>−0.348</td><td>−0.108</td><td>−0.086</td><td>−0.103</td><td>−0.034</td><td>−0.040</td><td>0.038</td><td>0.081</td><td>−0.046</td><td>−0.385</td></tr>
 <tr><td><span class="recon"><a href="#metric-wr2-dctrl">WR²(Δctrl)</a>
 <a class="recon-card" href="#metric-wr2-dctrl">
   <span class="recon-card-top"><span class="recon-card-name">WR²(Δctrl)</span></span>
@@ -625,7 +639,7 @@ $$
   <span class="recon-card-title">加权 R²（Δctrl）</span>
   <span class="recon-card-desc">与 WMSE 同权重的加权 R²，在对照位移上评估。</span>
   <span class="recon-card-foot">公式与计算过程 · Miller 2026</span>
-</a></span></td><td>−0.042</td><td>−0.069</td><td>−0.178</td><td>−0.033</td><td>0.071</td><td>−0.037</td><td>0.052</td><td>0.014</td><td>0.105</td><td>−0.037</td></tr>
+</a></span></td><td>−0.042</td><td>−0.069</td><td>−0.178</td><td>−0.033</td><td>0.071</td><td>−0.037</td><td>0.052</td><td>0.014</td><td>0.105</td><td>0.246</td><td>−0.037</td><td>0.319</td></tr>
 <tr><td><span class="recon"><a href="#metric-wr2-dpert">WR²(Δpert)</a>
 <a class="recon-card" href="#metric-wr2-dpert">
   <span class="recon-card-top"><span class="recon-card-name">WR²(Δpert)</span></span>
@@ -633,7 +647,7 @@ $$
   <span class="recon-card-title">加权 R²（Δpert）</span>
   <span class="recon-card-desc">加权 R²，参考为本折训练均值。</span>
   <span class="recon-card-foot">公式与计算过程 · Miller 2026</span>
-</a></span></td><td>−0.020</td><td>−0.035</td><td>−0.149</td><td>−0.004</td><td>0.094</td><td>−0.005</td><td>0.080</td><td>0.047</td><td>0.132</td><td>−0.020</td></tr>
+</a></span></td><td>−0.020</td><td>−0.035</td><td>−0.149</td><td>−0.004</td><td>0.094</td><td>−0.005</td><td>0.080</td><td>0.047</td><td>0.132</td><td>0.289</td><td>−0.020</td><td>0.369</td></tr>
 <tr><td><span class="recon"><a href="#metric-nir">NIR</a>
 <a class="recon-card" href="#metric-nir">
   <span class="recon-card-top"><span class="recon-card-name">NIR</span></span>
@@ -641,7 +655,7 @@ $$
   <span class="recon-card-title">归一化逆秩（检索）</span>
   <span class="recon-card-desc">预测是否在欧氏距离上最近于正确扰动真值；反映全局扰动景观结构。</span>
   <span class="recon-card-foot">公式与计算过程 · Miller 2026</span>
-</a></span></td><td>0.517</td><td>0.500</td><td>0.518</td><td>0.555</td><td>0.535</td><td>0.554</td><td>0.608</td><td>0.585</td><td>0.647</td><td>0.500</td></tr>
+</a></span></td><td>0.517</td><td>0.500</td><td>0.518</td><td>0.555</td><td>0.535</td><td>0.554</td><td>0.608</td><td>0.585</td><td>0.647</td><td>0.644</td><td>0.500</td><td>0.842</td></tr>
 <tr><td><span class="recon"><a href="#metric-pds">PDS</a>
 <a class="recon-card" href="#metric-pds">
   <span class="recon-card-top"><span class="recon-card-name">PDS</span></span>
@@ -649,7 +663,7 @@ $$
   <span class="recon-card-title">扰动判别分数</span>
   <span class="recon-card-desc">与 NIR 同结构，距离改为曼哈顿距离（L1）；STATE / VCC 所用。</span>
   <span class="recon-card-foot">公式与计算过程 · Miller 2026</span>
-</a></span></td><td>0.518</td><td>0.500</td><td>0.516</td><td>0.552</td><td>0.522</td><td>0.551</td><td>0.598</td><td>0.578</td><td>0.634</td><td>0.500</td></tr>
+</a></span></td><td>0.518</td><td>0.500</td><td>0.516</td><td>0.552</td><td>0.522</td><td>0.551</td><td>0.598</td><td>0.578</td><td>0.634</td><td>0.593</td><td>0.500</td><td>0.810</td></tr>
 <tr><td><span class="recon"><a href="#metric-mse-degs">MSE(DEGs)</a>
 <a class="recon-card" href="#metric-mse-degs">
   <span class="recon-card-top"><span class="recon-card-name">MSE(DEGs)</span></span>
@@ -657,7 +671,7 @@ $$
   <span class="recon-card-title">均方误差（DEGs）</span>
   <span class="recon-card-desc">只在 top-100 DEG 子集上的 MSE。</span>
   <span class="recon-card-foot">公式与计算过程 · Miller 2026</span>
-</a></span></td><td>0.052</td><td>0.052</td><td>0.049</td><td>0.047</td><td>0.050</td><td>0.047</td><td>0.038</td><td>0.041</td><td>0.035</td><td>0.055</td></tr>
+</a></span></td><td>0.052</td><td>0.052</td><td>0.049</td><td>0.047</td><td>0.050</td><td>0.047</td><td>0.038</td><td>0.041</td><td>0.035</td><td>0.021</td><td>0.055</td><td>0.013</td></tr>
 <tr><td><span class="recon"><a href="#metric-mae-degs">MAE(DEGs)</a>
 <a class="recon-card" href="#metric-mae-degs">
   <span class="recon-card-top"><span class="recon-card-name">MAE(DEGs)</span></span>
@@ -665,7 +679,7 @@ $$
   <span class="recon-card-title">平均绝对误差（DEGs）</span>
   <span class="recon-card-desc">top-100 DEG 上的 MAE。</span>
   <span class="recon-card-foot">公式与计算过程 · Miller 2026</span>
-</a></span></td><td>0.157</td><td>0.156</td><td>0.155</td><td>0.144</td><td>0.153</td><td>0.144</td><td>0.130</td><td>0.136</td><td>0.127</td><td>0.156</td></tr>
+</a></span></td><td>0.157</td><td>0.156</td><td>0.155</td><td>0.144</td><td>0.153</td><td>0.144</td><td>0.130</td><td>0.136</td><td>0.127</td><td>0.103</td><td>0.156</td><td>0.084</td></tr>
 <tr><td><span class="recon"><a href="#metric-pearson-dctrl-degs">Pearson(Δctrl DEGs)</a>
 <a class="recon-card" href="#metric-pearson-dctrl-degs">
   <span class="recon-card-top"><span class="recon-card-name">Pearson(Δctrl DEGs)</span></span>
@@ -673,7 +687,7 @@ $$
   <span class="recon-card-title">DEG 上相对对照 Pearson</span>
   <span class="recon-card-desc">DEG 子集上的 Pearson(Δctrl)。</span>
   <span class="recon-card-foot">公式与计算过程 · Miller 2026</span>
-</a></span></td><td>0.294</td><td>0.268</td><td>0.220</td><td>0.183</td><td>0.371</td><td>0.223</td><td>0.268</td><td>0.277</td><td>0.412</td><td>未定义</td></tr>
+</a></span></td><td>0.294</td><td>0.268</td><td>0.220</td><td>0.183</td><td>0.371</td><td>0.223</td><td>0.268</td><td>0.277</td><td>0.412</td><td>0.598</td><td>未定义</td><td>0.607</td></tr>
 <tr><td><span class="recon"><a href="#metric-pearson-dpert-degs">Pearson(Δpert DEGs)</a>
 <a class="recon-card" href="#metric-pearson-dpert-degs">
   <span class="recon-card-top"><span class="recon-card-name">Pearson(Δpert DEGs)</span></span>
@@ -681,7 +695,7 @@ $$
   <span class="recon-card-title">DEG 上相对均值 Pearson</span>
   <span class="recon-card-desc">DEG 子集上的 Pearson(Δpert)。</span>
   <span class="recon-card-foot">公式与计算过程 · Miller 2026</span>
-</a></span></td><td>0.159</td><td>未定义</td><td>0.096</td><td>0.121</td><td>0.287</td><td>0.143</td><td>0.232</td><td>0.210</td><td>0.370</td><td>−0.052</td></tr>
+</a></span></td><td>0.159</td><td>未定义</td><td>0.096</td><td>0.121</td><td>0.287</td><td>0.143</td><td>0.232</td><td>0.210</td><td>0.370</td><td>0.571</td><td>−0.052</td><td>0.619</td></tr>
 <tr><td><span class="recon"><a href="#metric-r2-dctrl-degs">R²(Δctrl DEGs)</a>
 <a class="recon-card" href="#metric-r2-dctrl-degs">
   <span class="recon-card-top"><span class="recon-card-name">R²(Δctrl DEGs)</span></span>
@@ -689,7 +703,7 @@ $$
   <span class="recon-card-title">DEG 上 R²(Δctrl)</span>
   <span class="recon-card-desc">DEG 子集上的 R²(Δctrl)，下限 −1。</span>
   <span class="recon-card-foot">公式与计算过程 · Miller 2026</span>
-</a></span></td><td>−0.201</td><td>−0.260</td><td>−0.378</td><td>−0.263</td><td>−0.090</td><td>−0.256</td><td>−0.164</td><td>−0.199</td><td>−0.069</td><td>−0.286</td></tr>
+</a></span></td><td>−0.201</td><td>−0.260</td><td>−0.378</td><td>−0.263</td><td>−0.090</td><td>−0.256</td><td>−0.164</td><td>−0.199</td><td>−0.069</td><td>0.156</td><td>−0.286</td><td>0.174</td></tr>
 <tr><td><span class="recon"><a href="#metric-r2-dpert-degs">R²(Δpert DEGs)</a>
 <a class="recon-card" href="#metric-r2-dpert-degs">
   <span class="recon-card-top"><span class="recon-card-name">R²(Δpert DEGs)</span></span>
@@ -697,7 +711,7 @@ $$
   <span class="recon-card-title">DEG 上 R²(Δpert)</span>
   <span class="recon-card-desc">DEG 子集上的 R²(Δpert)，下限 −1。</span>
   <span class="recon-card-foot">公式与计算过程 · Miller 2026</span>
-</a></span></td><td>−0.256</td><td>−0.307</td><td>−0.381</td><td>−0.268</td><td>−0.123</td><td>−0.266</td><td>−0.166</td><td>−0.210</td><td>−0.078</td><td>−0.309</td></tr>
+</a></span></td><td>−0.256</td><td>−0.307</td><td>−0.381</td><td>−0.268</td><td>−0.123</td><td>−0.266</td><td>−0.166</td><td>−0.210</td><td>−0.078</td><td>0.139</td><td>−0.309</td><td>0.196</td></tr>
 </tbody></table></div>
 
 <p><strong>比较边界：</strong>不再从不同原生支持集的均值给出模型名次；相对 Mean 的配对结果见下图。</p>
