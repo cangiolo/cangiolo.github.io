@@ -236,9 +236,9 @@ predict                对 300 个抽样 control 取均值
 
 ### fMLP–Geneformer
 
-**fMLP + Geneformer-V2-104M。**冻结 Geneformer 词嵌入，其上训练 MLP probe；非动态 cell embedding。
+**fMLP + Geneformer-V2-104M。**冻结 Geneformer 词嵌入，其上训练 MLP probe。
 
-**出处：**原作者 Christina Theodoris 实验室在 Hugging Face 发布的官方权重（[ctheodoris/Geneformer](https://huggingface.co/ctheodoris/Geneformer)，子目录 `Geneformer-V2-104M`），不是社区第三方重训。约 2024 年 12 月在 [Genecorpus-104M](https://huggingface.co/datasets/theodoris-lab/Genecorpus-104M) 上预训练：约 1.04 亿（103,877,737）人类单细胞转录组，来自 2903 个公开数据集（GEO / SRA / CELLxGENE / HCA 等），不含高突变负荷细胞（恶性细胞、永生化细胞系）；词表约 20,271 个蛋白编码基因。论文见 Chen & Venkatesh et al., *Nature Computational Science* 2026。本复现只用作者写入 h5ad 的静态 `word_embeddings`（20,271×768）查表，不跑、不微调 Transformer。
+**Geneformer-V2-104M：**静态 `word_embeddings`（20,271×768）查表，无训练。Geneformer 作者 Christina Theodoris 实验室在 Hugging Face 发布的官方权重（[ctheodoris/Geneformer](https://huggingface.co/ctheodoris/Geneformer)，子目录 `Geneformer-V2-104M`）。约 2024 年 12 月在 [Genecorpus-104M](https://huggingface.co/datasets/theodoris-lab/Genecorpus-104M) 上预训练：约 1.04 亿（103,877,737）人类单细胞转录组，来自 2903 个公开数据集（GEO / SRA / CELLxGENE / HCA 等），不含高突变负荷细胞（恶性细胞、永生化细胞系）；词表约 20,271 个蛋白编码基因。
 
 ```
 嵌入                   Geneformer-V2-104M word_embeddings（HF 官方）
