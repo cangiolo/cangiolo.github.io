@@ -176,10 +176,10 @@ GO 可评约 2029；Linear n=1855（仅表达靶）；fMLP–Geneformer n=1986�
 **比较边界：**不再从不同原生支持集的均值给出模型名次；相对 Mean 的配对结果见下图。
 
 <figure>
-<img src="../assets/img/perturbation-baselines/k562-wmse-forest.png" alt="K562 八模型相对 Mean 的配对 WMSE 差值、95% bootstrap 置信区间与校正后显著性" />
-<figcaption>图 4. 本次 K562 配对 WMSE 森林图：八个模型（Linear、GEARS、fMLP–Geneformer、scGPT、fMLP–scGPT、fMLP–GenePT、fMLP–ESM2、PRESAGE）与 Mean 共用 1802 个扰动、8369 个基因。逐扰动计算 \(\Delta_i=\mathrm{WMSE}_i(\text{模型})-\mathrm{WMSE}_i(\text{Mean})\)，负值更好。点为差值均值，横线为扰动级 percentile bootstrap 的 95% CI（10,000 次，seed=42）；配对 t 检验按 8 次比较做 Bonferroni 校正。95% CI 未做多重比较校正，统计显著性应看校正后的 P 值，不能只看区间是否跨零。Mean 仅作零参考，不做检验。</figcaption>
+<img src="../assets/img/perturbation-baselines/k562-wmse-forest-original-style.png" alt="K562 原样式 WMSE 森林图：保留十行并加入 PRESAGE，展示相对 Mean 的差值、95% bootstrap 置信区间及校正后 P 值和 t 值" />
+<figcaption>图 4. 沿用原图样式与十个已有条目，仅加入 PRESAGE；十一行按平均差值从小到大排列，共用 1802 个测试扰动。逐扰动计算 \(\Delta_i=\mathrm{WMSE}_i(\text{模型})-\mathrm{WMSE}_i(\text{Mean})\)，负值更好。点为差值均值，横线为扰动级 bootstrap 的 95% 百分位置信区间（10,000 次，随机种子 42）。右侧 P 为双侧配对 t 检验经 11 次比较的 Bonferroni 校正值，t 为检验统计量。置信区间未做多重比较校正，不能只看是否跨零判断校正后显著性。红色虚线为 Mean 的零参考，不另画 Mean 行，也不对 Mean 自身做检验。</figcaption>
 </figure>
-<p>表格描述各模型原生覆盖，森林图则在同一扰动、基因轴与 GT/权重上重新评分；n 不同，表中均值不能直接相减来复原图中差值。图中不放 Tech.Dup / Inter.Dup / Control：已有分数使用 8370 基因，不能混入此处 8369 基因的共同轴；表格仍保留原有对照列。</p>
+<p>本次只复用已有逐扰动分数，不重新评分。保留原图的 Technical duplicate、Interpolated duplicate、Control mean，以及其余模型的标签、配色与斜体标注。三项对照仍使用 8370 基因的旧分数；其余模型及 Mean 使用 8369 基因的共同轴。这里对齐的是扰动集合，基因轴差异尚未统一，因此不能把全图称为完全同口径的公平比较。上表仍按各模型原生覆盖汇总，不能直接用表中均值相减来复原图中差值。<a href="../assets/img/perturbation-baselines/k562-wmse-forest-original-style.csv">逐行统计值</a>与<a href="../assets/img/perturbation-baselines/k562-wmse-forest-original-style.meta.json">数据来源及绘图协议</a>一并保留。</p>
 
 ## Jurkat（Nadig25）
 
@@ -673,7 +673,7 @@ $$
 
 - **HepG2 GEARS fold0：**首次 predict 时同卡 vLLM OOM；checkpoint 已恢复，`train_seconds` 为空，10 epoch 日志确认完成。
 
-- **共同队列：**补跑报告已重评共同轴；本页 K562 森林图使用固定 1802×8369 队列，native 表不以共同队列数替换。旧 COMPARE 文档未重写。
+- **共同扰动集合：**K562 森林图的十一行对齐到 1802 个扰动；沿用原图三项对照的 8370 基因分数，其余模型及 Mean 为 8369 基因，差异尚未统一。native 表不以共同集合数替换；本次没有重评分，旧 COMPARE 文档未重写。
 
 - **划分与环境差异：**沿用本地约 70:10:20 五折划分，作者代码实际约 69:11:20；test 成员相同不代表 train/validation 完全相同。新模型不在作者原 Docker 中运行：scGPT/fMLP 使用现有 torch 2.11.0 环境，scGPT 用原生 SDPA 而非 flash-attn；PRESAGE 使用独立 torch 2.2.0 环境。评分另用固定 NumPy 1.26.4 / pandas 2.2.3 环境，不宣称历史运行位级等价。
 

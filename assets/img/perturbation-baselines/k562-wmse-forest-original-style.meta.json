@@ -1,0 +1,247 @@
+{
+  "dataset": "Replogle22 K562",
+  "metric": "WMSE",
+  "delta_definition": "WMSE(model) - WMSE(Mean), paired on fold and condition; lower is better",
+  "figure_contract": "One quantitative comparison panel: add PRESAGE to the original ten rows, without changing original marks, labels, typography, colors, title, xlabel or annotation format. Python/matplotlib. Original width 7.2 in, 160 dpi PNG plus PDF; height follows original 0.42*n+1.2 formula.",
+  "adaptation": "Structural adaptation of original script; only PRESAGE appended to data/calculations; output filenames changed; original plotting block otherwise unchanged.",
+  "n_perturbations": 1802,
+  "n_models": 11,
+  "models_included": [
+    "Technical duplicate",
+    "Interpolated duplicate",
+    "scGPT",
+    "PRESAGE",
+    "fMLP-GenePT",
+    "fMLP-ESM2",
+    "fMLP-scGPT",
+    "fMLP-Geneformer",
+    "Linear",
+    "GEARS",
+    "Control mean"
+  ],
+  "models_excluded_not_run": [
+    "scLambda",
+    "CellFlow"
+  ],
+  "mean_reference": "Red dashed zero line only, not a row or comparison",
+  "original_iteration_order": [
+    "scgpt",
+    "fmlp_scgpt",
+    "gears",
+    "fmlp_geneformer",
+    "fmlp_genept",
+    "fmlp_esm2",
+    "linear",
+    "technical_duplicate",
+    "interpolated",
+    "control"
+  ],
+  "new_iteration_order": [
+    "scgpt",
+    "fmlp_scgpt",
+    "gears",
+    "fmlp_geneformer",
+    "fmlp_genept",
+    "fmlp_esm2",
+    "linear",
+    "technical_duplicate",
+    "interpolated",
+    "control",
+    "presage"
+  ],
+  "bootstrap": {
+    "n_resamples": 10000,
+    "seed": 42,
+    "confidence_level": 0.95,
+    "method": "percentile",
+    "sampling": "One sequential NumPy default_rng stream in original ten-model iteration order, then PRESAGE; original per-source row order retained; no canonical resort before sampling",
+    "unit": "paired perturbation, pooled across five folds",
+    "quantiles": [
+      0.025,
+      0.975
+    ]
+  },
+  "significance": {
+    "test": "two-sided one-sample t-test of paired model-minus-Mean differences",
+    "degrees_of_freedom": 1801,
+    "correction": "Bonferroni",
+    "n_comparisons": 11,
+    "p_bonf": "min(raw p * 11, 1)",
+    "old_adjusted_p_change": "11/10 of original ten-comparison values; raw p, t, mu and CI unchanged",
+    "display": "original adjusted-P and signed-t code, unchanged"
+  },
+  "original_ten_consistency": {
+    "exact_mu_ci_t_raw_p_n_labels": true,
+    "reference_annotation_10_comparison_checks": {
+      "technical_duplicate": [
+        "2.5e-65",
+        "-17.9"
+      ],
+      "interpolated": [
+        "6.2e-53",
+        "-16.0"
+      ],
+      "scgpt": [
+        "7.5e-25",
+        "-10.7"
+      ],
+      "fmlp_genept": [
+        "7.9e-45",
+        "-14.6"
+      ],
+      "fmlp_esm2": [
+        "1.9e-35",
+        "-12.9"
+      ],
+      "fmlp_scgpt": [
+        "5.9e-15",
+        "-8.2"
+      ],
+      "fmlp_geneformer": [
+        "2.3e-12",
+        "-7.4"
+      ],
+      "linear": [
+        "7.9e-21",
+        "-9.7"
+      ],
+      "gears": [
+        "0.115",
+        "-2.5"
+      ],
+      "control": [
+        "1.2e-46",
+        "14.9"
+      ]
+    },
+    "reference_annotation_match": true,
+    "original_png_reconstruction_pixel_identical": true,
+    "reference_png_sha256": "f4c39b2a851a48cd4cffadae87cd9e4db0fabb6dbeb0e9397f1b46dc415c9398",
+    "png_limit": "Image annotations only expose rounded adjusted P and t; exact underlying values are established by rerunning the unchanged original calculation source; full original image reconstruction matches every RGBA pixel."
+  },
+  "coverage": {
+    "unique_model_fold_condition": true,
+    "finite_wmse": true,
+    "identical_1802_key_sets": true,
+    "key_hash_definition": "SHA256 of UTF-8 JSON sorted [int(fold),str(condition)] pairs with separators comma/colon",
+    "key_sha256_by_model": {
+      "scgpt": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b",
+      "fmlp_scgpt": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b",
+      "gears": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b",
+      "fmlp_geneformer": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b",
+      "fmlp_genept": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b",
+      "fmlp_esm2": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b",
+      "linear": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b",
+      "mean": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b",
+      "technical_duplicate": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b",
+      "interpolated": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b",
+      "control": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b",
+      "presage": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b"
+    },
+    "fold_counts": {
+      "0": 356,
+      "1": 363,
+      "2": 360,
+      "3": 364,
+      "4": 359
+    },
+    "baseline_filter": {
+      "technical_duplicate": {
+        "source_n": 2029,
+        "retained_n": 1802,
+        "outside_requested_keys": 227,
+        "duplicates_removed": 0
+      },
+      "interpolated": {
+        "source_n": 2029,
+        "retained_n": 1802,
+        "outside_requested_keys": 227,
+        "duplicates_removed": 0
+      },
+      "control": {
+        "source_n": 2029,
+        "retained_n": 1802,
+        "outside_requested_keys": 227,
+        "duplicates_removed": 0
+      }
+    },
+    "fc_retained_rows": 14416,
+    "presage_retained_rows": 1802,
+    "no_training_or_rescoring": true
+  },
+  "gene_axis": {
+    "stage1_and_presage_n_genes": 8369,
+    "original_auxiliary_baselines_n_genes": 8370,
+    "same_gene_axis_for_all_rows": false,
+    "baseline_gene_count_evidence": "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-gears-k562-repro-20261021/author_formal/results/evaluation_manifest.json"
+  },
+  "caveats": [
+    "User explicitly requested preserving the original Technical duplicate, Interpolated duplicate and Control mean WMSE scores on their 8370-gene axis, paired with 8369-gene Mean on identical perturbation keys. This mixed-axis comparison is retained unchanged, not a strict common-gene-axis benchmark.",
+    "No retraining or rescoring. Of 2029 source perturbations per auxiliary baseline, only the original 1802 final_common keys are retained; no requested cohort member is dropped.",
+    "Bootstrap and t-test pool perturbations across folds; shared fitted models can induce dependence. Intervals reflect perturbation variability, not independent training replicates.",
+    "The prior figures/k562_wmse_forest_vs_mean.meta.json was overwritten by the nine-row variant and is not evidence for the supplied ten-row reference."
+  ],
+  "sources": {
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-remaining-20261026/k562/evaluation_stage1/all8_r1/final_common/per_perturbation.csv": {
+      "sha256": "62a36b621ab46afca40ea3c31b8256ee71f25e0c84fa7d2fc2e11aa9b7ff5d2d"
+    },
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-gears-k562-repro-20261021/author_formal/results/per_perturbation.csv": {
+      "sha256": "06f05e90378432f0dba8002c0a8d3e113aa64f8440bd08964c06c9fef725da19"
+    },
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-remaining-20261026/k562/evaluation_presage/full5_r1/fixed_common/presage/per_perturbation.csv": {
+      "sha256": "a8f54f5cc122a84ee35dbb19ef285195d27af7a8547fed77cf0bdf0697b0e37c"
+    },
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-remaining-20261026/k562/evaluation_stage1/all8_r1/final_common/axes.json": {
+      "sha256": "93c3286fba180d5b125f416a232134017cf9afe91af3f2a5ae2e18777756b413"
+    },
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-gears-k562-repro-20261021/author_formal/results/evaluation_manifest.json": {
+      "sha256": "862bf8db1c20bc789649467d4af3abbe8bfcc5a19481a20cd00b6da79d19ffd3"
+    },
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-remaining-20261026/code/plot_k562_wmse_forest.py": {
+      "sha256": "a6182eaf975ac2227f667a3fdc4edfcfcbd6e53558ce8080f1c340e617c109b6"
+    },
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-remaining-20261026/code/plot_k562_wmse_forest_original_style.py": {
+      "sha256": "bb3269e47cc214a4a463b8998e5426e2fa7a617cf04de20b487e55b46a5699fe"
+    }
+  },
+  "script": "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-remaining-20261026/code/plot_k562_wmse_forest_original_style.py",
+  "runtime": {
+    "python": "/data1/home/zhouy1/software/miniconda/envs/geneformer/bin/python",
+    "numpy": "1.26.4",
+    "pandas": "2.2.3",
+    "scipy": "1.15.2",
+    "matplotlib": "3.10.1"
+  },
+  "command": "/data1/home/zhouy1/software/miniconda/envs/geneformer/bin/python /data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-remaining-20261026/code/plot_k562_wmse_forest_original_style.py",
+  "qa": {
+    "style_priority": "Explicit original-image preservation supersedes journal typography/vector/size defaults; no style modernization",
+    "rendered_original_reference_comparison": "Exact RGBA match before adding PRESAGE",
+    "source_preflight": {
+      "tool": "nature-figure/scripts/validate_figure.py",
+      "command": "/data1/home/zhouy1/software/miniconda/envs/geneformer/bin/python /tmp/nature_validate_original_presage.py /data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-remaining-20261026/code/plot_k562_wmse_forest_original_style.py --json",
+      "counts": {"PASS": 8, "WARN": 2, "FAIL": 4},
+      "publication_ready": false,
+      "original_style_exceptions": {
+        "FONT-FAMILY": "Original source has no explicit rcParams font family; preserve original environment font behavior rather than redesign. Runtime reported absent SimHei and DejaVu Sans fallback; original reconstruction was nevertheless pixel-identical.",
+        "EDITABLE-TEXT": "Original source lacks svg.fonttype=none and pdf.fonttype=42; unchanged to preserve requested original plotting block.",
+        "EXPORT-VECTOR": "Original exports PNG and PDF, not SVG. Requested delivery is the original-style PNG, CSV and metadata.",
+        "RASTER-DPI": "Original 160 dpi retained by explicit user request; do not claim journal submission resolution.",
+        "EXPORT-RASTER": "No TIFF; requested raster is PNG.",
+        "DEMO-DATA": "False-positive heuristic: default_rng is used only for percentile bootstrap resampling of measured perturbation WMSE differences, never simulated source observations."
+      }
+    },
+    "visual_inspection": "Viewed original supplied PNG first and delivered eleven-row PNG afterward. No unintended mismatch observed: exact original labels and ASCII hyphens, italic reference labels, blue Linear marker, gray learned methods/PRESAGE, horizontal capped CIs, title, xlabel, zero dashed line and P+t format retained. Expected differences are inserted PRESAGE row, original formula's increased height and eleven-comparison adjusted P values. No Mean row or n annotations added.",
+    "qa_recording": "Post-render audit annotations added to this metadata; source script and rendered image remain unchanged."
+  },
+  "outputs": {
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-remaining-20261026/figures/k562_wmse_forest_original_style.png": {
+      "sha256": "ba9e4c2ac72badf87c81eeb6e70081f5248e7ddc3fa9cfa6f402344564aaafb1"
+    },
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-remaining-20261026/figures/k562_wmse_forest_original_style.pdf": {
+      "sha256": "d1fdb010270b267a9fe6870fc1588c54ee05cc8ed58733051a3b99eeed8e5b1f"
+    },
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-remaining-20261026/figures/k562_wmse_forest_original_style.csv": {
+      "sha256": "fd41c2824b38c23f812a7182bacb6af4e049dd8eb0aedc1af7aba57cbaabc848"
+    }
+  }
+}
