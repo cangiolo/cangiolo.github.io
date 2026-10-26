@@ -238,7 +238,15 @@ predict                对 300 个抽样 control 取均值
 
 **fMLP + Geneformer-V2-104M。**冻结 Geneformer 词嵌入，其上训练 MLP probe。
 
-**Geneformer-V2-104M：**静态 `word_embeddings`（20,271×768）查表，无训练。Geneformer 作者 Christina Theodoris 实验室在 Hugging Face 发布的官方权重（[ctheodoris/Geneformer](https://huggingface.co/ctheodoris/Geneformer)，子目录 `Geneformer-V2-104M`）。约 2024 年 12 月在 [Genecorpus-104M](https://huggingface.co/datasets/theodoris-lab/Genecorpus-104M) 上预训练：约 1.04 亿（103,877,737）人类单细胞转录组，来自 2903 个公开数据集（GEO / SRA / CELLxGENE / HCA 等），不含高突变负荷细胞（恶性细胞、永生化细胞系）；词表约 20,271 个蛋白编码基因。
+**Geneformer-V2-104M：**静态 `word_embeddings`（20,271×768）查表，无训练。
+
+**来源：**Christina Theodoris 实验室在 Hugging Face 发布的官方权重（[ctheodoris/Geneformer](https://huggingface.co/ctheodoris/Geneformer)，子目录 `Geneformer-V2-104M`）。
+
+**训练时间：**约 2024 年 12 月在 [Genecorpus-104M](https://huggingface.co/datasets/theodoris-lab/Genecorpus-104M) 上预训练。
+
+**预训练语料：**约 1.04 亿（103,877,737）人类单细胞转录组，来自 2903 个公开数据集（GEO / SRA / CELLxGENE / HCA 等），不含高突变负荷细胞（恶性细胞、永生化细胞系）；词表约 20,271 个蛋白编码基因。
+
+**预训练算力：**FP32；DeepSpeed 分布式；8–24× NVIDIA H100 80GB；GF-104M 共 3 epochs（Chen & Venkatesh et al., *Nat Comput Sci* 2026；原文未报总 GPU-hours）。
 
 ```
 嵌入                   Geneformer-V2-104M word_embeddings（HF 官方）
