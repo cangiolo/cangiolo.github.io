@@ -28,9 +28,9 @@ $$
 - **汇总成一行森林图。**对所有 $\Delta_i$ 取均值 $\mu_\Delta$；95% CI 用扰动级 bootstrap（文中 10,000 次）；再对「模型 vs Mean」做配对 t 检验（Bonferroni）。一点 + 横线 = 这一行的 $\mu_\Delta$ 与 CI，不是五折先平均再画。
 
 <details id="k562-wmse-example">
-<summary>K562 算例：从一个扰动走完 WMSE→Δ</summary>
-<p><strong>教学截取，非全基因。</strong>取真实 Replogle22 K562 的测试扰动 <code>ACTR3</code>，模型为 GEARS，折次为 <code>fold_0</code>。下列集合 \(S\) 仅含 6 个基因（按 GT 的 \(|t|\) 降序取第 1、2、101、1001、4001、8370 名），用来演示计算，不代表模型整体表现。</p>
-<p><strong>1．取出同一扰动的三个向量。</strong>\(y\) 是已落盘 GT 半细胞伪批量，\(\hat y\) 是 GEARS 预测，\(\mu_{\mathrm{all}}\) 是本折训练扰动伪批量的等权平均；均沿用复现产物的表达尺度。</p>
+<summary>测评计算示例</summary>
+<p><strong>数据集：</strong>Replogle22 K562 的测试扰动 <code>ACTR3</code>，模型为 GEARS。</p>
+<p><strong>1．取出同一扰动的三个向量。</strong>\(y\) 是 GT，\(\hat y\) 是 GEARS 预测，\(\mu_{\mathrm{all}}\) 是本折训练扰动伪批量的等权平均。</p>
 <table>
 <thead><tr><th scope="col">基因</th><th scope="col">\(y\)（GT）</th><th scope="col">\(\hat y\)（GEARS）</th><th scope="col">\(\mu_{\mathrm{all}}\)（Mean）</th></tr></thead>
 <tbody>
