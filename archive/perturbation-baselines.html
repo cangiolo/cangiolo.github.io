@@ -73,7 +73,7 @@
 <p><strong>模型排序</strong>与 <a href="https://doi.org/10.1038/s41587-026-03307-w" target="_blank" rel="noopener">Miller et al.</a> 的 Figure / Extended Data 中一致。</p>
 <p><strong>评测任务与指标：</strong>本复现覆盖未见单基因扰动三个数据集：HepG2（Nadig25）、K562（Replogle22）、Jurkat（Nadig25）；共 18 个指标。</p>
 <h2 id="sec-existing-metrics">现有指标及计算方案</h2>
-<p><a href="https://doi.org/10.1038/s41587-026-03307-w" target="_blank" rel="noopener">Miller et al.</a> 用校准后的指标说明：深度模型在部分指标上可以打过无信息 baseline。以 Fig. 2b（K562，WMSE）为例，从矩阵到森林图的处理如下。</p>
+<p><a href="https://doi.org/10.1038/s41587-026-03307-w" target="_blank" rel="noopener">Miller et al.</a> 用校准后的指标说明：即便较早期的深度模型，在部分指标上也大多能超过无信息 baseline；更新的模型（如 PRESAGE）更进一步。以 Fig. 2b（K562，WMSE）为例，从矩阵到森林图的处理如下。</p>
 <ol>
 <li><strong>预测矩阵合并为扰动级向量（每轮按扰动计算，不是逐细胞比）。</strong>每个测试扰动把细胞对半：GT 半聚成真值伪批量 \(y\)（GT），模型输出同维伪批量 \(\hat{y}\)（预测）。GEARS 等对抽样 control 取均值后再加扰动效应。Mean 基线则是本折训练扰动伪批量的等权平均 \(\mu_{\mathrm{all}}\)。</li>
 <li><strong>每个扰动算一次 WMSE。</strong>用 GT 半细胞相对「其余非对照扰动」细胞做 t-test（overestim_var），得到 \(t_g\)（\(|t_g|\) 反映该基因相对其他扰动的特异程度）；对 \(|t|\) min–max 后再平方得基因权重 \(w_g\)（权重只来自 GT，避免泄漏）。然后
@@ -84,7 +84,6 @@ $$
 <li><strong>Fig. 2b 画的不是绝对 WMSE，而是差值。</strong>每个扰动：\(\Delta_i=\mathrm{WMSE}_i(\text{模型})-\mathrm{WMSE}_i(\text{Mean})\)。WMSE 越低越好，所以 \(\Delta&lt;0\)（点在 0 左侧）= 打过 Mean。图注 \(n=2045\) 就是这类成对差值的扰动数。</li>
 <li><strong>汇总成一行森林图。</strong>对所有 \(\Delta_i\) 取均值 \(\mu_\Delta\)；95% CI 用扰动级 bootstrap（文中 10,000 次）；再对「模型 vs Mean」做配对 t 检验（Bonferroni）。一点 + 横线 = 这一行的 \(\mu_\Delta\) 与 CI，不是五折先平均再画。</li>
 </ol>
-<p>一句话：预测/真值矩阵 → 每扰动伪批量 → 每扰动 WMSE → 减 Mean 的 WMSE → 对扰动平均进森林图。下面三张原图（已裁切页眉页脚与英文长图注）对应主文 Fig. 2 与 Extended Data Fig. 6–7；完整印刷数字仍以 Supplementary Table 2 为准。</p>
 <figure>
 <img src="../assets/img/perturbation-baselines/miller-fig2.png" alt="Miller Fig. 2b–g：相对 Mean 的森林图（已裁去 a 面板）" />
 <figcaption>图 1. Miller et al., <em>Nat Biotechnol</em>（2026），Figure 2b–g（已裁去 a 面板任务示意）。相对 Mean 的森林图：左列 Replogle22 K562 未见单基因；右列 Wessels23 未见组合。</figcaption>
