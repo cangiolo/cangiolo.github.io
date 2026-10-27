@@ -225,5 +225,7 @@
       "sha256": "099c4f944914ac5b41a1da9896f334dd7a9c20eb7f9334fcb3f27471849bbf84"
     }
   },
-  "title": "Unseen gene perturbation\nWMSE in Replogle22 K562"
+  "title": "Unseen gene perturbation\nWMSE in Replogle22 K562",
+  "color_note": "All baselines (technical_duplicate, interpolated, linear, control) use #4C78A8 blue to match Miller original; learned models #6B6B6B. Fixed 2026-10-27 after Linear-only blue was wrong.",
+  "redrawn_at": "2026-10-27T10:43:18+08:00"
 }
