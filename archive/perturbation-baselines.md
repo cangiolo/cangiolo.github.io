@@ -4,12 +4,20 @@
 
 ## 结论
 
-**结果口径：**下表保留各模型原生覆盖（native）的五折拼接均值，旧列数字不变；扰动数和基因轴不同，不能据此直接排出跨模型名次，也不宣称扩大后的模型排序与论文全部一致。K562 的配对 WMSE 比较另见共同队列森林图。
+**结果口径：**下表保留各模型原生覆盖（native）的五折拼接均值，旧列数字不变；扰动数和基因轴不同，不能据此直接排出跨模型名次，也不宣称扩大后的模型排序与论文全部一致。K562 的配对 WMSE 比较见下方共同队列森林图。
 
 **评测任务与指标：**本复现覆盖未见单基因扰动三个数据集：HepG2（Nadig25）、K562（Replogle22）、Jurkat（Nadig25）；共 18 个指标。原有 Linear、Mean、GEARS、fMLP–Geneformer 与正负对照保持；新增 scGPT、fMLP–scGPT、fMLP–GenePT、fMLP–ESM2、PRESAGE 仅覆盖 HepG2/K562，每模型每数据集均完成 5/5 折，不扩展 Jurkat。
 
 **本次更新（2026-10-26）：**合入 scGPT 报告（2026-10-25）与其余模型补跑报告（2026-10-26）；PRESAGE 只采用完整五折结果。scLambda 因缺少独立嵌入缓存跳过；CellFlow 因现有运行入口与依赖阻塞跳过，均未训练、无本次结果。
 
+
+**比较边界：**不再从不同原生支持集的均值给出模型名次；相对 Mean 的配对结果见下图。
+
+<figure>
+<img src="../assets/img/perturbation-baselines/k562-wmse-forest-original-style.png" alt="K562 原样式 WMSE 森林图：原有 11 行标签不变，按差值插入 fMLP-tGPT、fMLP-scBERT、fMLP-UCE、两行 fMLP-scratch、fMLP-Nicheformer，以及 n=1801 的 scFoundation-reduced 和 n=1660 的 GeneCompass-reduced" />
+<figcaption>图 4. 样式、标题、横轴和原来 11 行的标签都没改，新模型按平均差值从小到大插进去。每一行都是逐扰动的 \(\Delta_i=\mathrm{WMSE}_i(\text{模型})-\mathrm{WMSE}_i(\text{Mean})\)，负值更好。点是差值均值，横线是 10,000 次、种子 42 的扰动级 bootstrap 95% 区间。右侧 P 是双侧配对 t 的 Bonferroni 校正，t 是检验统计量。比较次数从 11 次改成 19 次，所以原来各行的校正 P 变了；这些行的差值、区间、t 和未校正 P 没有重算。区间本身不做多重比较校正，不能只看它过不过零。红色虚线是 Mean，不另画一行，也不对 Mean 自己做检验。</figcaption>
+</figure>
+<p>新加的六行和原来 11 行一样，都是固定的 1802 个扰动：fMLP-tGPT、fMLP-scBERT、fMLP-UCE（Δ+protein）、fMLP-scratch random、fMLP-scratch learned、fMLP-Nicheformer。另外两行队列更小，标签上写了 n。scFoundation-reduced 是 1801 个，只少了 NBAS。GeneCompass-reduced 是 1660 个。每一行的 Mean 都取这一行自己那批扰动，没有把其他模型改到 1801 或 1660 上重算。所以可以看每一行比不比自己的 Mean 好，不能把整张图当成同一批扰动上的名次。CellFlow 还没跑完，没有放进来。分数都用各次运行现成的逐扰动 WMSE，没有重新训练或重新评分。Technical duplicate、Interpolated duplicate、Control mean 仍用 8370 个基因的旧分数，斜体和配色保留；其余行和 Mean 用 8369 个基因。基因轴还没对齐，这张图不是完全同口径的公平比较。上表仍按各模型自己的覆盖范围汇总，不能拿表里的均值相减来还原图中的差值。<a href="../assets/img/perturbation-baselines/k562-wmse-forest-original-style.csv">逐行统计值</a>与<a href="../assets/img/perturbation-baselines/k562-wmse-forest-original-style.meta.json">数据来源及绘图协议</a>一并保留。</p>
 
 ## 现有指标及计算方案
 
@@ -172,14 +180,6 @@ GO 可评约 2029；Linear n=1855（仅表达靶）；fMLP–Geneformer n=1986�
 | Pearson(Δpert DEGs) | 0.159    | 未定义      | 0.096    | 0.121           | 0.287 | 0.143 | 0.232 | 0.210 | 0.370 | 0.571 | −0.052   | 0.619 |
 | R²(Δctrl DEGs)      | −0.201   | −0.260   | −0.378   | −0.263          | −0.090 | −0.256 | −0.164 | −0.199 | −0.069 | 0.156 | −0.286   | 0.174 |
 | R²(Δpert DEGs)      | −0.256   | −0.307   | −0.381   | −0.268          | −0.123 | −0.266 | −0.166 | −0.210 | −0.078 | 0.139 | −0.309   | 0.196 |
-
-**比较边界：**不再从不同原生支持集的均值给出模型名次；相对 Mean 的配对结果见下图。
-
-<figure>
-<img src="../assets/img/perturbation-baselines/k562-wmse-forest-original-style.png" alt="K562 原样式 WMSE 森林图：原有 11 行标签不变，按差值插入 fMLP-tGPT、fMLP-scBERT、fMLP-UCE、两行 fMLP-scratch、fMLP-Nicheformer，以及 n=1801 的 scFoundation-reduced 和 n=1660 的 GeneCompass-reduced" />
-<figcaption>图 4. 样式、标题、横轴和原来 11 行的标签都没改，新模型按平均差值从小到大插进去。每一行都是逐扰动的 \(\Delta_i=\mathrm{WMSE}_i(\text{模型})-\mathrm{WMSE}_i(\text{Mean})\)，负值更好。点是差值均值，横线是 10,000 次、种子 42 的扰动级 bootstrap 95% 区间。右侧 P 是双侧配对 t 的 Bonferroni 校正，t 是检验统计量。比较次数从 11 次改成 19 次，所以原来各行的校正 P 变了；这些行的差值、区间、t 和未校正 P 没有重算。区间本身不做多重比较校正，不能只看它过不过零。红色虚线是 Mean，不另画一行，也不对 Mean 自己做检验。</figcaption>
-</figure>
-<p>新加的六行和原来 11 行一样，都是固定的 1802 个扰动：fMLP-tGPT、fMLP-scBERT、fMLP-UCE（Δ+protein）、fMLP-scratch random、fMLP-scratch learned、fMLP-Nicheformer。另外两行队列更小，标签上写了 n。scFoundation-reduced 是 1801 个，只少了 NBAS。GeneCompass-reduced 是 1660 个。每一行的 Mean 都取这一行自己那批扰动，没有把其他模型改到 1801 或 1660 上重算。所以可以看每一行比不比自己的 Mean 好，不能把整张图当成同一批扰动上的名次。CellFlow 还没跑完，没有放进来。分数都用各次运行现成的逐扰动 WMSE，没有重新训练或重新评分。Technical duplicate、Interpolated duplicate、Control mean 仍用 8370 个基因的旧分数，斜体和配色保留；其余行和 Mean 用 8369 个基因。基因轴还没对齐，这张图不是完全同口径的公平比较。上表仍按各模型自己的覆盖范围汇总，不能拿表里的均值相减来还原图中的差值。<a href="../assets/img/perturbation-baselines/k562-wmse-forest-original-style.csv">逐行统计值</a>与<a href="../assets/img/perturbation-baselines/k562-wmse-forest-original-style.meta.json">数据来源及绘图协议</a>一并保留。</p>
 
 ## Jurkat（Nadig25）
 

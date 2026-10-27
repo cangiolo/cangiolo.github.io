@@ -70,9 +70,18 @@
 <div class="prose">
 
 <h2 id="sec-lead">结论</h2>
-<p><strong>结果口径：</strong>下表保留各模型原生覆盖（native）的五折拼接均值，旧列数字不变；扰动数和基因轴不同，不能据此直接排出跨模型名次，也不宣称扩大后的模型排序与论文全部一致。K562 的配对 WMSE 比较另见共同队列森林图。</p>
+<p><strong>结果口径：</strong>下表保留各模型原生覆盖（native）的五折拼接均值，旧列数字不变；扰动数和基因轴不同，不能据此直接排出跨模型名次，也不宣称扩大后的模型排序与论文全部一致。K562 的配对 WMSE 比较见下方共同队列森林图。</p>
 <p><strong>评测任务与指标：</strong>本复现覆盖未见单基因扰动三个数据集：HepG2（Nadig25）、K562（Replogle22）、Jurkat（Nadig25）；共 18 个指标。原有 Linear、Mean、GEARS、fMLP–Geneformer 与正负对照保持；新增 scGPT、fMLP–scGPT、fMLP–GenePT、fMLP–ESM2、PRESAGE 仅覆盖 HepG2/K562，每模型每数据集均完成 5/5 折，不扩展 Jurkat。</p>
 <p><strong>本次更新（2026-10-26）：</strong>合入 scGPT 报告（2026-10-25）与其余模型补跑报告（2026-10-26）；PRESAGE 只采用完整五折结果。scLambda 因缺少独立嵌入缓存跳过；CellFlow 因现有运行入口与依赖阻塞跳过，均未训练、无本次结果。</p>
+<p><strong>比较边界：</strong>不再从不同原生支持集的均值给出模型名次；相对 Mean 的配对结果见下图。</p>
+<figure>
+<img src="../assets/img/perturbation-baselines/k562-wmse-forest-original-style.png" alt="K562 原样式 WMSE 森林图：原有 11 行标签不变，按差值插入 fMLP-tGPT、fMLP-scBERT、fMLP-UCE、两行 fMLP-scratch、fMLP-Nicheformer，以及 n=1801 的 scFoundation-reduced 和 n=1660 的 GeneCompass-reduced" />
+<figcaption>图 4. 样式、标题、横轴和原来 11 行的标签都没改，新模型按平均差值从小到大插进去。每一行都是逐扰动的 \(\Delta_i=\mathrm{WMSE}_i(\text{模型})-\mathrm{WMSE}_i(\text{Mean})\)，负值更好。点是差值均值，横线是 10,000 次、种子 42 的扰动级 bootstrap 95% 区间。右侧 P 是双侧配对 t 的 Bonferroni 校正，t 是检验统计量。比较次数从 11 次改成 19 次，所以原来各行的校正 P 变了；这些行的差值、区间、t 和未校正 P 没有重算。区间本身不做多重比较校正，不能只看它过不过零。红色虚线是 Mean，不另画一行，也不对 Mean 自己做检验。</figcaption>
+</figure>
+<p>新加的六行和原来 11 行一样，都是固定的 1802 个扰动：fMLP-tGPT、fMLP-scBERT、fMLP-UCE（Δ+protein）、fMLP-scratch random、fMLP-scratch learned、fMLP-Nicheformer。另外两行队列更小，标签上写了 n。scFoundation-reduced 是 1801 个，只少了 NBAS。GeneCompass-reduced 是 1660 个。每一行的 Mean 都取这一行自己那批扰动，没有把其他模型改到 1801 或 1660 上重算。所以可以看每一行比不比自己的 Mean 好，不能把整张图当成同一批扰动上的名次。CellFlow 还没跑完，没有放进来。分数都用各次运行现成的逐扰动 WMSE，没有重新训练或重新评分。Technical duplicate、Interpolated duplicate、Control mean 仍用 8370 个基因的旧分数，斜体和配色保留；其余行和 Mean 用 8369 个基因。基因轴还没对齐，这张图不是完全同口径的公平比较。上表仍按各模型自己的覆盖范围汇总，不能拿表里的均值相减来还原图中的差值。<a href="../assets/img/perturbation-baselines/k562-wmse-forest-original-style.csv">逐行统计值</a>与<a href="../assets/img/perturbation-baselines/k562-wmse-forest-original-style.meta.json">数据来源及绘图协议</a>一并保留。</p>
+
+
+
 <h2 id="sec-existing-metrics">现有指标及计算方案</h2>
 <p><a href="https://doi.org/10.1038/s41587-026-03307-w" target="_blank" rel="noopener">Miller et al.</a> 用校准后的指标说明：即便较早期的深度模型，在部分指标上也大多能超过无信息 baseline；更新的模型（如 PRESAGE）更进一步。以 Fig. 2b（K562，WMSE）为例，从矩阵到森林图的处理如下。</p>
 <ol>
@@ -713,13 +722,6 @@ $$
   <span class="recon-card-foot">公式与计算过程 · Miller 2026</span>
 </a></span></td><td>−0.256</td><td>−0.307</td><td>−0.381</td><td>−0.268</td><td>−0.123</td><td>−0.266</td><td>−0.166</td><td>−0.210</td><td>−0.078</td><td>0.139</td><td>−0.309</td><td>0.196</td></tr>
 </tbody></table></div>
-
-<p><strong>比较边界：</strong>不再从不同原生支持集的均值给出模型名次；相对 Mean 的配对结果见下图。</p>
-<figure>
-<img src="../assets/img/perturbation-baselines/k562-wmse-forest-original-style.png" alt="K562 原样式 WMSE 森林图：原有 11 行标签不变，按差值插入 fMLP-tGPT、fMLP-scBERT、fMLP-UCE、两行 fMLP-scratch、fMLP-Nicheformer，以及 n=1801 的 scFoundation-reduced 和 n=1660 的 GeneCompass-reduced" />
-<figcaption>图 4. 样式、标题、横轴和原来 11 行的标签都没改，新模型按平均差值从小到大插进去。每一行都是逐扰动的 \(\Delta_i=\mathrm{WMSE}_i(\text{模型})-\mathrm{WMSE}_i(\text{Mean})\)，负值更好。点是差值均值，横线是 10,000 次、种子 42 的扰动级 bootstrap 95% 区间。右侧 P 是双侧配对 t 的 Bonferroni 校正，t 是检验统计量。比较次数从 11 次改成 19 次，所以原来各行的校正 P 变了；这些行的差值、区间、t 和未校正 P 没有重算。区间本身不做多重比较校正，不能只看它过不过零。红色虚线是 Mean，不另画一行，也不对 Mean 自己做检验。</figcaption>
-</figure>
-<p>新加的六行和原来 11 行一样，都是固定的 1802 个扰动：fMLP-tGPT、fMLP-scBERT、fMLP-UCE（Δ+protein）、fMLP-scratch random、fMLP-scratch learned、fMLP-Nicheformer。另外两行队列更小，标签上写了 n。scFoundation-reduced 是 1801 个，只少了 NBAS。GeneCompass-reduced 是 1660 个。每一行的 Mean 都取这一行自己那批扰动，没有把其他模型改到 1801 或 1660 上重算。所以可以看每一行比不比自己的 Mean 好，不能把整张图当成同一批扰动上的名次。CellFlow 还没跑完，没有放进来。分数都用各次运行现成的逐扰动 WMSE，没有重新训练或重新评分。Technical duplicate、Interpolated duplicate、Control mean 仍用 8370 个基因的旧分数，斜体和配色保留；其余行和 Mean 用 8369 个基因。基因轴还没对齐，这张图不是完全同口径的公平比较。上表仍按各模型自己的覆盖范围汇总，不能拿表里的均值相减来还原图中的差值。<a href="../assets/img/perturbation-baselines/k562-wmse-forest-original-style.csv">逐行统计值</a>与<a href="../assets/img/perturbation-baselines/k562-wmse-forest-original-style.meta.json">数据来源及绘图协议</a>一并保留。</p>
 
 <h2 id="sec-jurkat">Jurkat（Nadig25）</h2>
 <p>Miller 文印刷表 <strong>无</strong> Jurkat 的 Linear/GEARS/fMLP 行。下表为 Linear 报告中的<strong>共同支持集 n=2108</strong>（六模型同扰动）；<span class="recon"><a href="#model-fmlp">fMLP–Geneformer</a>

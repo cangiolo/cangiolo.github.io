@@ -224,5 +224,6 @@
     "assets/img/perturbation-baselines/k562-wmse-forest-original-style.csv": {
       "sha256": "099c4f944914ac5b41a1da9896f334dd7a9c20eb7f9334fcb3f27471849bbf84"
     }
-  }
+  },
+  "title": "Unseen gene perturbation\nWMSE in Replogle22 K562"
 }
