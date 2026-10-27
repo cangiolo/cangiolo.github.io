@@ -1,0 +1,79 @@
+{
+  "dataset": "Replogle22 K562",
+  "figure": "2x3 forest: WMSE, WR2(delta ctrl), Pearson(delta pert), MSE, Pearson(delta ctrl), NIR",
+  "run": "runs/miller-forest-k562-6metric-20261027",
+  "script": "runs/miller-forest-k562-6metric-20261027/code/plot_k562_six_metric_forest.py",
+  "outputs": {
+    "png": "assets/img/perturbation-baselines/k562-six-metric-forest.png",
+    "pdf": "assets/img/perturbation-baselines/k562-six-metric-forest.pdf",
+    "stats_csv": "assets/img/perturbation-baselines/k562-six-metric-forest.csv"
+  },
+  "dpi": 300,
+  "style": {
+    "baselines": ["technical_duplicate", "interpolated", "linear", "control"],
+    "baseline_color": "#4C78A8",
+    "baseline_labels": "italic",
+    "model_color": "#6B6B6B",
+    "zero_line": "#C44E52 dashed",
+    "better_direction": "top of each panel"
+  },
+  "excluded": ["CellFlow", "scLambda"],
+  "cohort": {
+    "fixed_n": 1802,
+    "fixed_mean": "runs/miller-remaining-20261026/k562/evaluation_stage1/all8_r1/final_common/per_perturbation.csv model=mean",
+    "genecompass_label": "GeneCompass (n=1660)",
+    "genecompass_n": 1660,
+    "genecompass_mean": "same file as its scores; WMSE column only",
+    "scfoundation_label": "scFoundation (n=1801)",
+    "scfoundation_n": 1801,
+    "scfoundation_note": "fixed 1802 minus NBAS; Mean is that file's mean on the same 1801 keys",
+    "gene_axis": "Technical duplicate, Interpolated duplicate, and Control mean stay on the 8370-gene GEARS author_formal scores, paired to the 8369-gene fixed Mean. Other rows and that Mean use 8369 genes."
+  },
+  "delta_definition": "Except panel c: score(model) - score(dataset mean), paired on fold and condition. Each row uses the Mean on that row's own keys. Five folds are pooled. A row is omitted, not trimmed, if its scores are not finite on every perturbation of its cohort.",
+  "panels": {
+    "a_wmse": {"column": "wmse", "contrast": "delta", "direction": "lower better", "n_rows": 19, "omitted": []},
+    "b_weighted_r2_deltactrl": {"column": "weighted_r2_deltactrl", "contrast": "delta", "direction": "higher better", "n_rows": 18, "omitted": ["fmlp_genecompass_reduced: column absent"]},
+    "c_pearson_deltapert": {
+      "column": "pearson_deltapert",
+      "contrast": "raw score tested against 0",
+      "direction": "higher better",
+      "n_rows": 18,
+      "red_line": "0 correlation, not the dataset-mean predictor",
+      "why_not_delta": "Dataset-mean Pearson(delta pert) is NaN on every perturbation. A constant mean prediction has no delta-pert variance, so the correlation is undefined. NaN was not imputed as zero. This matches Miller et al. 2026 MOESM4 Results table cells I14 and I28, which are '-'.",
+      "omitted": ["fmlp_genecompass_reduced: column absent"]
+    },
+    "d_mse": {"column": "mse", "contrast": "delta", "direction": "lower better", "n_rows": 18, "omitted": ["fmlp_genecompass_reduced: column absent"]},
+    "e_pearson_deltactrl": {
+      "column": "pearson_deltactrl",
+      "contrast": "delta",
+      "direction": "higher better",
+      "n_rows": 17,
+      "omitted": [
+        "fmlp_genecompass_reduced: column absent",
+        "control: Pearson(delta ctrl) undefined on every perturbation; MOESM4 Results table H13 and H27 are '-'"
+      ]
+    },
+    "f_nir": {"column": "nir", "contrast": "delta", "direction": "higher better", "n_rows": 18, "omitted": ["fmlp_genecompass_reduced: column absent"]}
+  },
+  "statistics": {
+    "center": "mean of the per-perturbation values used in that panel",
+    "interval": "95% percentile bootstrap, 10000 resamples",
+    "seed": "numpy SeedSequence([42, metric index, roster index]); one generator per row, not the old single-panel sequential stream",
+    "test": "two-sided one-sample t-test against 0",
+    "bonferroni": "raw p times the number of rows drawn in that panel, capped at 1. Not the previous 11-comparison adjustment rewritten as 19.",
+    "underflow": "a raw p that underflows to 0 is drawn as P<10^{-300}",
+    "wmse_check": "WMSE paired means match the previous 19-row WMSE forest to 1e-9. Intervals were recomputed."
+  },
+  "sources": {
+    "technical_duplicate_interpolated_control": "runs/miller-gears-k562-repro-20261021/author_formal/results/per_perturbation.csv",
+    "fixed_cohort_and_mean": "runs/miller-remaining-20261026/k562/evaluation_stage1/all8_r1/final_common/per_perturbation.csv",
+    "presage": "runs/miller-remaining-20261026/k562/evaluation_presage/full5_r1/fixed_common/presage/per_perturbation.csv",
+    "fmlp_uce_delta_protein": "runs/miller-uce-20261027/k562/evaluation/fixed_common/per_perturbation.csv",
+    "fmlp_tgpt": "runs/miller-tgpt-20261027/k562/evaluation/per_perturbation.csv",
+    "fmlp_nicheformer": "runs/miller-nicheformer-20261027/k562/evaluation/per_perturbation.csv",
+    "fmlp_scbert": "runs/miller-scbert-20261027/k562/evaluation/per_perturbation.csv",
+    "fmlp_scratch_learned_and_random": "runs/miller-fmlp-scratch-20261027/k562/evaluation/formal_r1/common/per_perturbation.csv",
+    "genecompass": "runs/miller-genecompass-20261027/evaluation/k562_GeneCompass-reduced/per_perturbation_GeneCompass-reduced.csv",
+    "scfoundation": "runs/miller-scfoundation-20261027/evaluation/k562/reduced_all_models/per_perturbation.csv"
+  }
+}
