@@ -1,247 +1,228 @@
 {
   "dataset": "Replogle22 K562",
   "metric": "WMSE",
-  "delta_definition": "WMSE(model) - WMSE(Mean), paired on fold and condition; lower is better",
-  "figure_contract": "One quantitative comparison panel: add PRESAGE to the original ten rows, without changing original marks, labels, typography, colors, title, xlabel or annotation format. Python/matplotlib. Original width 7.2 in, 160 dpi PNG plus PDF; height follows original 0.42*n+1.2 formula.",
-  "adaptation": "Structural adaptation of original script; only PRESAGE appended to data/calculations; output filenames changed; original plotting block otherwise unchanged.",
-  "n_perturbations": 1802,
-  "n_models": 11,
+  "delta_definition": "WMSE(model) - WMSE(Mean), paired on fold and condition; lower is better. Each row uses the Mean scores on that row's own perturbation keys.",
+  "figure_contract": "Original-style panel. Historical eleven labels, colors, italics, title, xlabel, marker style, and annotation format unchanged. X limits locked to the historical eleven CI extent. Height still uses 0.42*n+1.2. New rows inserted by ascending mean difference. Python/matplotlib, 7.2 in, 160 dpi PNG plus PDF.",
+  "n_models": 19,
   "models_included": [
     "Technical duplicate",
     "Interpolated duplicate",
     "scGPT",
     "PRESAGE",
     "fMLP-GenePT",
+    "fMLP-UCE (Δ+protein)",
     "fMLP-ESM2",
+    "fMLP-tGPT",
     "fMLP-scGPT",
     "fMLP-Geneformer",
+    "GeneCompass-reduced (n=1660)",
     "Linear",
+    "fMLP-Nicheformer",
+    "scFoundation-reduced (n=1801)",
+    "fMLP-scBERT",
     "GEARS",
+    "fMLP-scratch learned",
+    "fMLP-scratch random",
     "Control mean"
   ],
-  "models_excluded_not_run": [
-    "scLambda",
-    "CellFlow"
+  "models_excluded": [
+    {
+      "model": "CellFlow",
+      "reason": "K562 run is not finished, so there is no paired per-perturbation WMSE to add."
+    }
   ],
-  "mean_reference": "Red dashed zero line only, not a row or comparison",
-  "original_iteration_order": [
-    "scgpt",
-    "fmlp_scgpt",
-    "gears",
-    "fmlp_geneformer",
-    "fmlp_genept",
-    "fmlp_esm2",
-    "linear",
-    "technical_duplicate",
-    "interpolated",
-    "control"
-  ],
-  "new_iteration_order": [
-    "scgpt",
-    "fmlp_scgpt",
-    "gears",
-    "fmlp_geneformer",
-    "fmlp_genept",
-    "fmlp_esm2",
-    "linear",
-    "technical_duplicate",
-    "interpolated",
-    "control",
-    "presage"
-  ],
+  "not_a_common_cohort_ranking": "scFoundation-reduced has n=1801 (fixed 1802 minus NBAS only). GeneCompass-reduced has n=1660. Every other row has n=1802. Rows are comparable only with the Mean on the same keys, not as a ranking on one shared perturbation set. Other models were not recomputed on 1801 or 1660.",
+  "significance": {
+    "test": "two-sided one-sample t-test of paired model-minus-Mean differences",
+    "correction": "Bonferroni",
+    "n_comparisons": 19,
+    "p_bonf": "min(raw p * 19, 1)",
+    "previous_n_comparisons": 11,
+    "old_adjusted_p_change": "Historical raw p, t, mu, and CI are unchanged. Adjusted P is 19/11 of the previous eleven-comparison values, capped at 1. GEARS display changes from 0.126 to 0.218.",
+    "display": "original adjusted-P and signed-t code, unchanged",
+    "confidence_intervals_not_multiplicity_adjusted": true
+  },
   "bootstrap": {
     "n_resamples": 10000,
     "seed": 42,
     "confidence_level": 0.95,
     "method": "percentile",
-    "sampling": "One sequential NumPy default_rng stream in original ten-model iteration order, then PRESAGE; original per-source row order retained; no canonical resort before sampling",
-    "unit": "paired perturbation, pooled across five folds",
-    "quantiles": [
-      0.025,
-      0.975
+    "historical_rows": "Copied from the previous original-style CSV. Not resampled, so the sequential RNG stream of the original eleven is untouched.",
+    "new_rows": "Copied from each run's published forest/paired summary after the per-perturbation mean, paired t, and raw p matched. Those runs used 10,000 percentile resamples, seed 42, paired perturbations pooled across five folds."
+  },
+  "axis_lock": {
+    "locked_to_historical_eleven_ci": true,
+    "xmin": -0.027730874758394,
+    "xmax": 0.0014913405284716,
+    "pad": 0.002337777302949248,
+    "xlim": [
+      -0.030068652061343248,
+      0.010374894279678741
     ]
   },
-  "significance": {
-    "test": "two-sided one-sample t-test of paired model-minus-Mean differences",
-    "degrees_of_freedom": 1801,
-    "correction": "Bonferroni",
-    "n_comparisons": 11,
-    "p_bonf": "min(raw p * 11, 1)",
-    "old_adjusted_p_change": "11/10 of original ten-comparison values; raw p, t, mu and CI unchanged",
-    "display": "original adjusted-P and signed-t code, unchanged"
-  },
-  "original_ten_consistency": {
-    "exact_mu_ci_t_raw_p_n_labels": true,
-    "reference_annotation_10_comparison_checks": {
-      "technical_duplicate": [
-        "2.5e-65",
-        "-17.9"
-      ],
-      "interpolated": [
-        "6.2e-53",
-        "-16.0"
-      ],
-      "scgpt": [
-        "7.5e-25",
-        "-10.7"
-      ],
-      "fmlp_genept": [
-        "7.9e-45",
-        "-14.6"
-      ],
-      "fmlp_esm2": [
-        "1.9e-35",
-        "-12.9"
-      ],
-      "fmlp_scgpt": [
-        "5.9e-15",
-        "-8.2"
-      ],
-      "fmlp_geneformer": [
-        "2.3e-12",
-        "-7.4"
-      ],
-      "linear": [
-        "7.9e-21",
-        "-9.7"
-      ],
-      "gears": [
-        "0.115",
-        "-2.5"
-      ],
-      "control": [
-        "1.2e-46",
-        "14.9"
-      ]
+  "verification": {
+    "fmlp_tgpt": {
+      "recomputed_mu": -0.0024048030198410664,
+      "n": 1802,
+      "key_sha256": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b"
     },
-    "reference_annotation_match": true,
-    "original_png_reconstruction_pixel_identical": true,
-    "reference_png_sha256": "f4c39b2a851a48cd4cffadae87cd9e4db0fabb6dbeb0e9397f1b46dc415c9398",
-    "png_limit": "Image annotations only expose rounded adjusted P and t; exact underlying values are established by rerunning the unchanged original calculation source; full original image reconstruction matches every RGBA pixel."
-  },
-  "coverage": {
-    "unique_model_fold_condition": true,
-    "finite_wmse": true,
-    "identical_1802_key_sets": true,
-    "key_hash_definition": "SHA256 of UTF-8 JSON sorted [int(fold),str(condition)] pairs with separators comma/colon",
-    "key_sha256_by_model": {
-      "scgpt": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b",
-      "fmlp_scgpt": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b",
-      "gears": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b",
-      "fmlp_geneformer": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b",
-      "fmlp_genept": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b",
-      "fmlp_esm2": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b",
-      "linear": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b",
-      "mean": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b",
-      "technical_duplicate": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b",
-      "interpolated": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b",
-      "control": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b",
-      "presage": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b"
+    "fmlp_scbert": {
+      "recomputed_mu": -0.0009246495254374946,
+      "n": 1802,
+      "key_sha256": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b"
     },
-    "fold_counts": {
-      "0": 356,
-      "1": 363,
-      "2": 360,
-      "3": 364,
-      "4": 359
+    "fmlp_uce_delta_protein": {
+      "recomputed_mu": -0.003935557311453995,
+      "n": 1802,
+      "key_sha256": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b"
     },
-    "baseline_filter": {
-      "technical_duplicate": {
-        "source_n": 2029,
-        "retained_n": 1802,
-        "outside_requested_keys": 227,
-        "duplicates_removed": 0
-      },
-      "interpolated": {
-        "source_n": 2029,
-        "retained_n": 1802,
-        "outside_requested_keys": 227,
-        "duplicates_removed": 0
-      },
-      "control": {
-        "source_n": 2029,
-        "retained_n": 1802,
-        "outside_requested_keys": 227,
-        "duplicates_removed": 0
-      }
+    "fmlp_scratch_random": {
+      "recomputed_mu": 0.001170014938045124,
+      "n": 1802,
+      "key_sha256": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b"
     },
-    "fc_retained_rows": 14416,
-    "presage_retained_rows": 1802,
-    "no_training_or_rescoring": true
-  },
-  "gene_axis": {
-    "stage1_and_presage_n_genes": 8369,
-    "original_auxiliary_baselines_n_genes": 8370,
-    "same_gene_axis_for_all_rows": false,
-    "baseline_gene_count_evidence": "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-gears-k562-repro-20261021/author_formal/results/evaluation_manifest.json"
-  },
-  "caveats": [
-    "User explicitly requested preserving the original Technical duplicate, Interpolated duplicate and Control mean WMSE scores on their 8370-gene axis, paired with 8369-gene Mean on identical perturbation keys. This mixed-axis comparison is retained unchanged, not a strict common-gene-axis benchmark.",
-    "No retraining or rescoring. Of 2029 source perturbations per auxiliary baseline, only the original 1802 final_common keys are retained; no requested cohort member is dropped.",
-    "Bootstrap and t-test pool perturbations across folds; shared fitted models can induce dependence. Intervals reflect perturbation variability, not independent training replicates.",
-    "The prior figures/k562_wmse_forest_vs_mean.meta.json was overwritten by the nine-row variant and is not evidence for the supplied ten-row reference."
-  ],
-  "sources": {
-    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-remaining-20261026/k562/evaluation_stage1/all8_r1/final_common/per_perturbation.csv": {
-      "sha256": "62a36b621ab46afca40ea3c31b8256ee71f25e0c84fa7d2fc2e11aa9b7ff5d2d"
+    "fmlp_scratch_learned": {
+      "recomputed_mu": 0.0011168033683808575,
+      "n": 1802,
+      "key_sha256": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b"
     },
-    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-gears-k562-repro-20261021/author_formal/results/per_perturbation.csv": {
-      "sha256": "06f05e90378432f0dba8002c0a8d3e113aa64f8440bd08964c06c9fef725da19"
+    "fmlp_nicheformer": {
+      "recomputed_mu": -0.0013219986001467771,
+      "n": 1802,
+      "key_sha256": "bee149e8bc31bb28f6a3b111209740f15f22370ef8514a9cc3ad87878fdd876b"
     },
-    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-remaining-20261026/k562/evaluation_presage/full5_r1/fixed_common/presage/per_perturbation.csv": {
-      "sha256": "a8f54f5cc122a84ee35dbb19ef285195d27af7a8547fed77cf0bdf0697b0e37c"
+    "fmlp_scfoundation": {
+      "recomputed_mu": -0.0011599391620925198,
+      "n": 1801,
+      "key_sha256": "90e26b0ea5030550c28fc4f2504dd246048ad27980f6b05a3dc2aeec8ad6dddf"
     },
-    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-remaining-20261026/k562/evaluation_stage1/all8_r1/final_common/axes.json": {
-      "sha256": "93c3286fba180d5b125f416a232134017cf9afe91af3f2a5ae2e18777756b413"
-    },
-    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-gears-k562-repro-20261021/author_formal/results/evaluation_manifest.json": {
-      "sha256": "862bf8db1c20bc789649467d4af3abbe8bfcc5a19481a20cd00b6da79d19ffd3"
-    },
-    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-remaining-20261026/code/plot_k562_wmse_forest.py": {
-      "sha256": "a6182eaf975ac2227f667a3fdc4edfcfcbd6e53558ce8080f1c340e617c109b6"
-    },
-    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-remaining-20261026/code/plot_k562_wmse_forest_original_style.py": {
-      "sha256": "bb3269e47cc214a4a463b8998e5426e2fa7a617cf04de20b487e55b46a5699fe"
+    "fmlp_genecompass_reduced": {
+      "recomputed_mu": -0.0014007582698495932,
+      "n": 1660,
+      "key_sha256": "680ef6a0c5334534e09138c16b7abd159f66fcca607c25876b0fa961b8b0a0aa"
     }
   },
-  "script": "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-remaining-20261026/code/plot_k562_wmse_forest_original_style.py",
+  "gene_axis": {
+    "historical_auxiliary_baselines_n_genes": 8370,
+    "models": "technical_duplicate, interpolated, control",
+    "other_rows_n_genes": 8369,
+    "same_gene_axis_for_all_rows": false
+  },
+  "cohort_notes": {
+    "technical_duplicate": "fixed 1802; historical row, statistics other than Bonferroni P unchanged",
+    "interpolated": "fixed 1802; historical row, statistics other than Bonferroni P unchanged",
+    "scgpt": "fixed 1802; historical row, statistics other than Bonferroni P unchanged",
+    "presage": "fixed 1802; historical row, statistics other than Bonferroni P unchanged",
+    "fmlp_genept": "fixed 1802; historical row, statistics other than Bonferroni P unchanged",
+    "fmlp_uce_delta_protein": "fixed 1802; UCE deletion+protein features, not another UCE variant",
+    "fmlp_esm2": "fixed 1802; historical row, statistics other than Bonferroni P unchanged",
+    "fmlp_tgpt": "fixed 1802; same fold-condition keys as the historical rows",
+    "fmlp_scgpt": "fixed 1802; historical row, statistics other than Bonferroni P unchanged",
+    "fmlp_geneformer": "fixed 1802; historical row, statistics other than Bonferroni P unchanged",
+    "fmlp_genecompass_reduced": "n=1660; GeneCompass-reduced cohort. Mean is that run's Mean on the same 1660 perturbations (per-key WMSE matches the fixed-cohort Mean on the overlap). Not a rank against the 1802 rows.",
+    "linear": "fixed 1802; historical row, statistics other than Bonferroni P unchanged",
+    "fmlp_nicheformer": "fixed 1802; fMLP head on Nicheformer, same fold-condition keys",
+    "fmlp_scfoundation": "n=1801; fixed 1802 cohort with only NBAS removed; Mean is the saved Mean on those same 1801 keys. Not rescored on 1801 for any other row.",
+    "fmlp_scbert": "fixed 1802; same fold-condition keys as the historical rows",
+    "gears": "fixed 1802; historical row, statistics other than Bonferroni P unchanged",
+    "fmlp_scratch_learned": "fixed 1802; learned lookup table",
+    "fmlp_scratch_random": "fixed 1802; frozen random gene table",
+    "control": "fixed 1802; historical row, statistics other than Bonferroni P unchanged"
+  },
+  "n_by_model": {
+    "technical_duplicate": 1802,
+    "interpolated": 1802,
+    "scgpt": 1802,
+    "presage": 1802,
+    "fmlp_genept": 1802,
+    "fmlp_uce_delta_protein": 1802,
+    "fmlp_esm2": 1802,
+    "fmlp_tgpt": 1802,
+    "fmlp_scgpt": 1802,
+    "fmlp_geneformer": 1802,
+    "fmlp_genecompass_reduced": 1660,
+    "linear": 1802,
+    "fmlp_nicheformer": 1802,
+    "fmlp_scfoundation": 1801,
+    "fmlp_scbert": 1802,
+    "gears": 1802,
+    "fmlp_scratch_learned": 1802,
+    "fmlp_scratch_random": 1802,
+    "control": 1802
+  },
+  "caveats": [
+    "Historical Technical duplicate, Interpolated duplicate, and Control mean stay on the 8370-gene scores, paired with 8369-gene Mean on the same 1802 keys.",
+    "No retraining and no rescoring. New rows reuse existing per-perturbation WMSE.",
+    "Different n means this figure is not a single-cohort ranking.",
+    "Bootstrap and t-test pool perturbations across folds; shared fitted models can induce dependence."
+  ],
+  "sources": {
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-fmlp-scratch-20261027/k562/evaluation/formal_r1/common/per_perturbation.csv": {
+      "sha256": "64083c4b6205d9915f68158ec314b788b0a1498b7f0ea4b9d6e7dc6568e39c65"
+    },
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-fmlp-scratch-20261027/k562/evaluation/formal_r1/common/stats_vs_mean.csv": {
+      "sha256": "fef51e83cf7d67bc650bbf2fbc00c9ccf7d481c2bce9c663d3943092a9831d93"
+    },
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-genecompass-20261027/evaluation/k562_GeneCompass-reduced/paired_vs_mean_GeneCompass-reduced.csv": {
+      "sha256": "b61ae8ce5b5b30fd839e71ff1644d1019e367e41c0407523fa5b0d4e9f8fe724"
+    },
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-genecompass-20261027/evaluation/k562_GeneCompass-reduced/per_perturbation_GeneCompass-reduced.csv": {
+      "sha256": "1920749a60546717fa2433047a6d1f7c459241070f3fc6e1579e2f98334c9763"
+    },
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-nicheformer-20261027/k562/evaluation/forest_row.csv": {
+      "sha256": "f53fcca611a488adaba71e8c573d18ecb2ef0618049a18e7993743bcd9d04d33"
+    },
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-nicheformer-20261027/k562/evaluation/matched_mean_per_perturbation.csv": {
+      "sha256": "4490d698dc708e6d0a6154450b335ac581ad13dd77526ec205da4d576bb9fc43"
+    },
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-nicheformer-20261027/k562/evaluation/per_perturbation.csv": {
+      "sha256": "7812c99346e619fb9318d44e184ac93694efe8b4e24f16cdaa56315e05e02031"
+    },
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-scbert-20261027/k562/evaluation/forest_row.csv": {
+      "sha256": "c5c5253e75b73a71a84a036de63197e33110c746629bd7e9e504ee102dc8dae6"
+    },
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-scbert-20261027/k562/evaluation/per_perturbation.csv": {
+      "sha256": "0a11ce0ce5bf72c33e37bb0500c54345793c7b89d3640be83b7b93b045ca7bb0"
+    },
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-scfoundation-20261027/evaluation/k562/reduced_all_models/per_perturbation.csv": {
+      "sha256": "fec8507a4f7069dc997a6869ae8c29ffaf19b3a09aa7f2e5a4d49a45f7cded4a"
+    },
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-scfoundation-20261027/figures/k562_scfoundation_reduced_wmse_forest.csv": {
+      "sha256": "1c3d5716a85aa8d4b6a1285b9ceacb66c69979e2d44834a37ec22d6da8687ab4"
+    },
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-tgpt-20261027/k562/evaluation/forest.csv": {
+      "sha256": "acf30ab05ddffadd4add4d9a824afbd393fcaf1c6a8eecb0df46765debe3d66e"
+    },
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-tgpt-20261027/k562/evaluation/per_perturbation.csv": {
+      "sha256": "85d4f8f111f684a8f370336f0448ce1cf9ccd236ffe1b14f706e35b8f55a0095"
+    },
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-uce-20261027/k562/evaluation/fixed_common/forest_summary.csv": {
+      "sha256": "ad6f1b676176899f55dcf6cb901761e828d94e22898dab9fdd1b6ff629b6f182"
+    },
+    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-uce-20261027/k562/evaluation/fixed_common/per_perturbation.csv": {
+      "sha256": "cb529f5d0b287fbe0835e93d8118fc0dad383783ee80888c2e3df6ea21c90143"
+    },
+    "/tmp/append_original_style.py": {
+      "sha256": "71cd569db26e819cdc30cb51c5d06b75f0d06a9aaf747c272f0ffb8e5d5f68ee"
+    }
+  },
+  "script": "/tmp/append_original_style.py",
   "runtime": {
-    "python": "/data1/home/zhouy1/software/miniconda/envs/geneformer/bin/python",
     "numpy": "1.26.4",
     "pandas": "2.2.3",
     "scipy": "1.15.2",
     "matplotlib": "3.10.1"
   },
-  "command": "/data1/home/zhouy1/software/miniconda/envs/geneformer/bin/python /data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-remaining-20261026/code/plot_k562_wmse_forest_original_style.py",
-  "qa": {
-    "style_priority": "Explicit original-image preservation supersedes journal typography/vector/size defaults; no style modernization",
-    "rendered_original_reference_comparison": "Exact RGBA match before adding PRESAGE",
-    "source_preflight": {
-      "tool": "nature-figure/scripts/validate_figure.py",
-      "command": "/data1/home/zhouy1/software/miniconda/envs/geneformer/bin/python /tmp/nature_validate_original_presage.py /data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-remaining-20261026/code/plot_k562_wmse_forest_original_style.py --json",
-      "counts": {"PASS": 8, "WARN": 2, "FAIL": 4},
-      "publication_ready": false,
-      "original_style_exceptions": {
-        "FONT-FAMILY": "Original source has no explicit rcParams font family; preserve original environment font behavior rather than redesign. Runtime reported absent SimHei and DejaVu Sans fallback; original reconstruction was nevertheless pixel-identical.",
-        "EDITABLE-TEXT": "Original source lacks svg.fonttype=none and pdf.fonttype=42; unchanged to preserve requested original plotting block.",
-        "EXPORT-VECTOR": "Original exports PNG and PDF, not SVG. Requested delivery is the original-style PNG, CSV and metadata.",
-        "RASTER-DPI": "Original 160 dpi retained by explicit user request; do not claim journal submission resolution.",
-        "EXPORT-RASTER": "No TIFF; requested raster is PNG.",
-        "DEMO-DATA": "False-positive heuristic: default_rng is used only for percentile bootstrap resampling of measured perturbation WMSE differences, never simulated source observations."
-      }
-    },
-    "visual_inspection": "Viewed original supplied PNG first and delivered eleven-row PNG afterward. No unintended mismatch observed: exact original labels and ASCII hyphens, italic reference labels, blue Linear marker, gray learned methods/PRESAGE, horizontal capped CIs, title, xlabel, zero dashed line and P+t format retained. Expected differences are inserted PRESAGE row, original formula's increased height and eleven-comparison adjusted P values. No Mean row or n annotations added.",
-    "qa_recording": "Post-render audit annotations added to this metadata; source script and rendered image remain unchanged."
-  },
+  "csv_text": "Historical eleven rows keep the previous CSV text for label, n, mu, ci_lo, ci_hi, t, p, and is_baseline. Only p_bonf was replaced with min(raw p * 19, 1). A first pandas export had shortened some of those strings; the published CSV was rewritten from the previous file so those fields stay byte-for-byte.",
   "outputs": {
-    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-remaining-20261026/figures/k562_wmse_forest_original_style.png": {
-      "sha256": "ba9e4c2ac72badf87c81eeb6e70081f5248e7ddc3fa9cfa6f402344564aaafb1"
+    "assets/img/perturbation-baselines/k562-wmse-forest-original-style.png": {
+      "sha256": "ed3998601bc3fb5bbf5962d03c6a7f081498bdea94df4c452f0d5fdb7cbf6451"
     },
-    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-remaining-20261026/figures/k562_wmse_forest_original_style.pdf": {
-      "sha256": "d1fdb010270b267a9fe6870fc1588c54ee05cc8ed58733051a3b99eeed8e5b1f"
+    "assets/img/perturbation-baselines/k562-wmse-forest-original-style.pdf": {
+      "sha256": "d73df8e93a83f2c02f8eb145a271278daa1c7132852087cfc41c9ea69d60d38e"
     },
-    "/data1/home/zhouy1/Projects/gene_perturb_predict/runs/miller-remaining-20261026/figures/k562_wmse_forest_original_style.csv": {
-      "sha256": "fd41c2824b38c23f812a7182bacb6af4e049dd8eb0aedc1af7aba57cbaabc848"
+    "assets/img/perturbation-baselines/k562-wmse-forest-original-style.csv": {
+      "sha256": "099c4f944914ac5b41a1da9896f334dd7a9c20eb7f9334fcb3f27471849bbf84"
     }
   }
 }
